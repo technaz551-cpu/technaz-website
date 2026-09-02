@@ -2,25 +2,71 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1a1f2b;
+  --brand-green: #8dc63f;
+  --brand-green-dark: #7ab332;
+  --brand-dark: #1a1f2b;
+  --brand-muted: #64748b;
+  --brand-cream: #fafaf8;
+  --brand-surface-green: #ecf6e8;
+  --brand-border: #e2e8f0;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-brand-green: var(--brand-green);
+  --color-brand-green-dark: var(--brand-green-dark);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-muted: var(--brand-muted);
+  --color-brand-cream: var(--brand-cream);
+  --color-brand-surface-green: var(--brand-surface-green);
+  --color-brand-border: var(--brand-border);
+  --font-sans: var(--font-inter);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: rgba(141, 198, 63, 0.25);
+  color: var(--brand-dark);
+}
+
+.bg-grid-light {
+  background-color: var(--brand-cream);
+  background-image:
+    linear-gradient(rgba(141, 198, 63, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(141, 198, 63, 0.07) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.bg-grid-mint {
+  background-color: var(--brand-surface-green);
+  background-image:
+    linear-gradient(rgba(141, 198, 63, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(141, 198, 63, 0.1) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 40s linear infinite;
 }
