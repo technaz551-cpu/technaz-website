@@ -193,7 +193,7 @@ export default function Process() {
             <div className="relative">
               <article
                 key={activeStep.label}
-                className="rounded-3xl p-6 sm:p-7 md:p-9 lg:p-10"
+                className="rounded-3xl p-20 sm:p-7 md:p-9 lg:p-10"
                 style={{ backgroundColor: activeStep.boxColor }}
               >
                 <h3 className="text-xl font-bold text-brand-dark md:text-2xl lg:text-3xl">
