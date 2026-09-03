@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const TEAM_SLIDES = [
   [
@@ -48,49 +49,44 @@ const TEAM_SLIDES = [
 
 function TeamCard({ member }) {
   return (
-    <div className="group/card relative w-full" style={{ transform: "translateZ(0)" }}>
+    <article className="group/card relative w-full">
       <div
-        className="relative w-full aspect-square bg-gray-50 overflow-visible"
+        className="relative aspect-square w-full overflow-visible bg-gray-50"
         style={{ borderRadius: "30px" }}
       >
-        {/* Image Wrapper - moves up on hover (title travels with it), extends beyond card */}
         <div className="absolute inset-0 z-10 overflow-visible transition-transform duration-300 ease-out group-hover/card:-translate-y-14">
           <div
-            className="relative w-full h-full overflow-hidden"
+            className="relative h-full w-full overflow-hidden"
             style={{ borderRadius: "27px" }}
           >
             <Image
               src={member.img}
-              alt={member.name}
+              alt={`${member.name} — ${member.title} at Technaz`}
               fill
-              sizes="(max-width: 768px) 33vw, 400px"
+              sizes="(max-width: 768px) 100vw, 400px"
               className="object-cover"
               style={{ objectPosition: member.position || "center" }}
             />
 
-            {/* Title badge - inside the image wrapper, moves together with it */}
-            <div className="absolute top-3 left-3 z-24">
-              <span className="text-lg font-bold text-brand-dark">
+            <div className="absolute left-3 top-3 z-20">
+              <span className="text-base font-bold text-brand-dark sm:text-lg">
                 {member.title}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Bottom Text */}
         <div
-          className="absolute bottom-0 left-0 right-0 z-0 h-0 group-hover/card:h-14 overflow-hidden bg-white transition-all duration-300 ease-out flex items-center justify-center"
+          className="absolute bottom-0 left-0 right-0 z-0 flex h-0 items-center justify-center overflow-hidden bg-white transition-all duration-300 ease-out group-hover/card:h-14"
           style={{
             borderBottomLeftRadius: "27px",
             borderBottomRightRadius: "27px",
           }}
         >
-          <span className="text-sm font-bold text-brand-dark">
-            {member.name}
-          </span>
+          <span className="text-sm font-bold text-brand-dark">{member.name}</span>
         </div>
       </div>
-    </div>
+    </article>
   );
 }
 
@@ -106,34 +102,43 @@ export default function Team() {
   };
 
   return (
-    <section className="bg-grid-green overflow-x-clip overflow-y-visible py-16 md:py-24">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        {/* Header: centered heading + arrows on the right */}
-        <div className="relative mb-25 -mt-12">
-          <h2 className="text-2xl md:text-3xl font-bold text-brand-dark text-center">
+    <section
+      id="about"
+      aria-labelledby="team-heading"
+      className="team-section overflow-x-clip overflow-y-visible bg-grid-green px-6 pb-6 pt-10 lg:px-10 lg:pb-8 lg:pt-12"
+    >
+      <div className="mx-auto w-full max-w-7xl">
+        <div className="mb-5 flex items-center justify-between gap-4 md:mb-6">
+          <div className="flex-1" aria-hidden="true" />
+
+          <h2
+            id="team-heading"
+            className="text-center text-xl font-bold tracking-tight text-brand-dark sm:text-2xl md:text-3xl"
+          >
             Meet Our Team Members
           </h2>
 
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 flex gap-4">
+          <div className="flex flex-1 justify-end gap-2">
             <button
+              type="button"
               onClick={prevSlide}
               aria-label="Previous team members"
-              className="w-10 h-10 rounded-full bg-white shadow flex items-center justify-center hover:bg-gray-50 transition-colors"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-brand-dark shadow-sm transition-colors hover:border-brand-green/40 hover:bg-brand-green-light sm:h-10 sm:w-10"
             >
-              <Image src="/images/team/arrow-left.png" alt="" width={22} height={22} />
+              <ChevronLeft className="h-5 w-5" aria-hidden="true" />
             </button>
             <button
+              type="button"
               onClick={nextSlide}
               aria-label="Next team members"
-              className="w-10 h-10 rounded-full bg-white shadow flex items-center justify-center hover:bg-gray-50 transition-colors"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-brand-dark shadow-sm transition-colors hover:border-brand-green/40 hover:bg-brand-green-light sm:h-10 sm:w-10"
             >
-              <Image src="/images/team/arrow-right.png" alt="" width={22} height={22} />
+              <ChevronRight className="h-5 w-5" aria-hidden="true" />
             </button>
           </div>
         </div>
 
-        {/* Carousel - clip horizontally only, allow vertical overflow for hover */}
-        <div className="overflow-x-clip overflow-y-visible">
+        <div className="overflow-x-clip overflow-y-visible pb-2">
           <div
             className="flex transition-transform duration-500 ease-out"
             style={{ transform: `translateX(-${current * 100}%)` }}
@@ -141,7 +146,7 @@ export default function Team() {
             {TEAM_SLIDES.map((slide, slideIndex) => (
               <div
                 key={slideIndex}
-                className="flex-shrink-0 w-full grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8"
+                className="grid w-full flex-shrink-0 grid-cols-1 gap-5 overflow-visible sm:grid-cols-3 sm:gap-6 md:gap-8"
               >
                 {slide.map((member, i) => (
                   <TeamCard key={i} member={member} />
@@ -149,6 +154,22 @@ export default function Team() {
               </div>
             ))}
           </div>
+        </div>
+
+        <div className="mt-4 flex justify-center gap-2">
+          {TEAM_SLIDES.map((_, index) => (
+            <button
+              key={index}
+              type="button"
+              aria-label={`Go to team slide ${index + 1}`}
+              onClick={() => setCurrent(index)}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                index === current
+                  ? "w-6 bg-brand-green"
+                  : "w-1.5 bg-brand-dark/20 hover:bg-brand-dark/35"
+              }`}
+            />
+          ))}
         </div>
       </div>
     </section>
