@@ -40,16 +40,13 @@ export default function ContactForm() {
         <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-2">
           {/* ================= LEFT: MAP ================= */}
           <div className="w-full overflow-hidden rounded-lg">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3158.268446014775!2d144.96114777672847!3d-37.66639952563173!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad64fe1a12e196f%3A0xf684f1bcdf34c460!2s21%20Killara%20Rd%2C%20Campbellfield%20VIC%203061%2C%20Australia!5e0!3m2!1sen!2s!4v1788329277354!5m2!1sen!2s"
-              width="600"
-              height="450"
-              style={{ border: 0 }}
-              allowFullScreen=""
+             <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3158.2682653291945!2d144.96114241176846!3d-37.66640377189628!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad64fe1a12e196f%3A0xf684f1bcdf34c460!2s21%20Killara%20Rd%2C%20Campbellfield%20VIC%203061%2C%20Australia!5e0!3m2!1sen!2s!4v1788522360066!5m2!1sen!2s"
+              className="h-[450px] w-full border-0"
+              allowFullScreen
               loading="lazy"
               referrerPolicy="strict-origin-when-cross-origin"
-              className="h-[450px] w-full"
-            />
+  /           >
           </div>
 
           {/* ================= RIGHT: FORM ================= */}
