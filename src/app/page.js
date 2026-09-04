@@ -37,7 +37,6 @@ export default function Home() {
           <Partnerships />
         </div>
         <Process />
-        <Team />
         <FAQ />
       </main>
     </>
