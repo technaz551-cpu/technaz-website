@@ -46,7 +46,7 @@ export default function ContactForm() {
               allowFullScreen
               loading="lazy"
               referrerPolicy="strict-origin-when-cross-origin"
-  /           >
+             />
           </div>
 
           {/* ================= RIGHT: FORM ================= */}

@@ -121,18 +121,18 @@ export default function Process() {
     <section
       id="process"
       ref={sectionRef}
-      className="relative h-[400vh] bg-white"
+      className="relative h-[400vh] bg-white mb-16 md:mb-24"
       aria-label="Our process"
     >
       <div className="process-section sticky top-0 h-screen w-full overflow-hidden">
-        <div className="mx-auto flex h-full w-full max-w-[1440px] flex-col justify-start px-4 pt-14 pb-2 sm:px-6 md:pt-16 lg:px-8 lg:pt-20 lg:pb-4">
-          <header className="mb-6 md:mb-8">
+        <div className="mx-auto flex h-full w-full max-w-[1440px] flex-col justify-start px-4 pt-10 pb-2 sm:px-6 md:pt-12 lg:px-8 lg:pt-14 lg:pb-4">
+          <header className="mb-4 md:mb-5">
             <h2 className="text-2xl font-bold text-brand-dark md:text-3xl lg:text-4xl">
               Our Process
             </h2>
 
             <div
-              className="mt-3 flex max-w-xl items-center md:max-w-2xl"
+              className="mt-2 flex max-w-xl items-center md:max-w-2xl"
               aria-hidden="true"
             >
               <span className="text-base leading-none text-brand-green">◆</span>
@@ -140,7 +140,7 @@ export default function Process() {
               <span className="text-base leading-none text-brand-green">➤</span>
             </div>
 
-            <p className="mt-3 text-base font-medium text-brand-gray md:text-lg">
+            <p className="mt-2 text-base font-medium text-brand-gray md:text-lg">
               Where custom software meets boundless potential
             </p>
           </header>
@@ -170,7 +170,7 @@ export default function Process() {
                     const isPast = index < activeIndex;
 
                     return (
-                      <li key={step.label} className="md:py-3.5 lg:py-4">
+                      <li key={step.label} className="md:py-2.5 lg:py-3">
                         <span
                           className={`block transition-colors duration-150 ${
                             isActive
@@ -193,7 +193,7 @@ export default function Process() {
             <div className="relative">
               <article
                 key={activeStep.label}
-                className="rounded-3xl p-20 sm:p-7 md:p-9 lg:p-10"
+                className="rounded-3xl p-6 sm:p-7 md:p-9 lg:p-10 pb-12 sm:pb-14 md:pb-16 lg:pb-20"
                 style={{ backgroundColor: activeStep.boxColor }}
               >
                 <h3 className="text-xl font-bold text-brand-dark md:text-2xl lg:text-3xl">
@@ -204,16 +204,16 @@ export default function Process() {
                   {activeStep.tagline}
                 </p>
 
-                <p className="mt-5 text-sm leading-relaxed text-gray-700 md:text-base md:leading-7">
+                <p className="mt-4 text-sm leading-relaxed text-gray-700 md:text-base md:leading-7">
                   {activeStep.description}
                 </p>
 
-                <div className="mt-6 grid gap-6 sm:grid-cols-2 md:mt-7">
+                <div className="mt-5 grid gap-5 sm:grid-cols-2 md:mt-6">
                   <div>
                     <h4 className="text-sm font-bold text-brand-dark">
                       What this includes:
                     </h4>
-                    <ul className="mt-3 space-y-2">
+                    <ul className="mt-2 space-y-1.5">
                       {activeStep.includes.map((item) => (
                         <li
                           key={item}
@@ -233,7 +233,7 @@ export default function Process() {
                     <h4 className="text-sm font-bold text-brand-dark">
                       Best suited for:
                     </h4>
-                    <ul className="mt-3 space-y-2">
+                    <ul className="mt-2 space-y-1.5">
                       {activeStep.bestSuitedFor.map((item) => (
                         <li
                           key={item}
@@ -252,7 +252,7 @@ export default function Process() {
 
                 <Link
                   href="/contact"
-                  className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-brand-dark transition-colors hover:text-brand-green md:mt-8"
+                  className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-brand-dark transition-colors hover:text-brand-green md:mt-7"
                 >
                   Learn More
                   <span className="flex h-8 w-8 items-center justify-center rounded-full border border-brand-dark/20 bg-white">

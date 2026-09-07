@@ -1,6 +1,7 @@
 import Image from "next/image";
+import Link from "next/link";
 
-export function ServiceContent({ title, description }) {
+export function ServiceContent({ title, description, slug }) {
   return (
     <div className="pt-3 sm:pt-4 md:pt-6">
       <h2 className="text-xl sm:text-2xl font-bold text-brand-dark md:text-3xl">
@@ -10,6 +11,12 @@ export function ServiceContent({ title, description }) {
       <p className="mt-4 sm:mt-5 max-w-xl text-sm leading-relaxed text-brand-dark/80 md:text-base md:leading-7">
         {description}
       </p>
+      <Link
+        href={`/services/${slug}`}
+        className="mt-5 inline-flex items-center justify-center rounded-full border border-brand-dark px-6 py-2.5 text-sm font-semibold text-brand-dark transition-colors hover:bg-brand-dark hover:text-white"
+      >
+        View More
+      </Link>
     </div>
   );
 }
@@ -33,6 +40,7 @@ export default function ServiceSplit({
   description,
   imageSrc,
   imageAlt,
+  slug,
   reverse = false,
 }) {
   return (
@@ -42,7 +50,7 @@ export default function ServiceSplit({
       }`}
     >
       <div className="md:w-1/2">
-        <ServiceContent title={title} description={description} />
+        <ServiceContent title={title} description={description} slug={slug} />
       </div>
       <div className="md:w-1/2">
         <ServiceImage src={imageSrc} alt={imageAlt} />

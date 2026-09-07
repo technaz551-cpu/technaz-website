@@ -4,7 +4,6 @@ import Services from "@/components/home/Services";
 import Expertise from "@/components/home/Expertise";
 import Partnerships from "@/components/home/Partnerships";
 import Process from "@/components/home/Process";
-import Team from "@/components/home/Team";
 import FAQ from "@/components/home/FAQ";
 import { SITE, organizationJsonLd } from "@/lib/site";
 
