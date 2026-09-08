@@ -17,6 +17,7 @@ const NAV_LINKS = [
 
 const PRODUCT_DROPDOWN = {
   column1: {
+    heading: "Platforms",
     items: [
       {
         label: "PRESTIGE RIDESHARE CLUB",
@@ -37,6 +38,7 @@ const PRODUCT_DROPDOWN = {
   },
 
   column2: {
+    heading: "Solutions",
     items: [
       {
         label: "CHOICE RIDESHARE CLUB",
@@ -66,6 +68,7 @@ export default function Navbar() {
   return (
     <header className="relative w-full border-b border-gray-100 bg-white">
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-10">
+
         {/* Logo */}
         <Link href="/" className="flex shrink-0 items-center">
           <Image
@@ -90,13 +93,15 @@ export default function Navbar() {
             {/* Product */}
             if (link.label === "Product") {
               return (
-                <li key={link.label} className="relative">
+                <li
+                  key={link.label}
+                  className="relative"
+                  onMouseEnter={() => setIsProductOpen(true)}
+                  onMouseLeave={() => setIsProductOpen(false)}
+                >
                   <button
                     type="button"
                     className="relative flex items-center gap-1 py-1"
-                    onClick={() =>
-                      setIsProductOpen((prev) => !prev)
-                    }
                   >
                     <span
                       className={
@@ -129,6 +134,7 @@ export default function Navbar() {
                     <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-4">
                       <div className="w-[650px] rounded-2xl border border-gray-100 bg-white p-7 shadow-2xl">
                         <div className="grid grid-cols-2 gap-10">
+
                           {/* Platforms */}
                           <div>
                             <h4 className="text-xs font-bold uppercase tracking-wider text-brand-gray">
@@ -204,6 +210,7 @@ export default function Navbar() {
                               )}
                             </div>
                           </div>
+
                         </div>
                       </div>
                     </div>
@@ -297,5 +304,8 @@ export default function Navbar() {
     </header>
   );
 }
+
+
+
 
 
