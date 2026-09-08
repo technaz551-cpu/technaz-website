@@ -17,7 +17,7 @@ const NAV_LINKS = [
 
 const PRODUCT_DROPDOWN = {
   column1: {
-    heading: "Platforms",
+    
     items: [
       {
         label: "PRESTIGE RIDESHARE CLUB",
@@ -38,7 +38,7 @@ const PRODUCT_DROPDOWN = {
   },
 
   column2: {
-    heading: "Solutions",
+    
     items: [
       {
         label: "CHOICE RIDESHARE CLUB",
