@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -17,42 +16,42 @@ const NAV_LINKS = [
 
 const PRODUCT_DROPDOWN = {
   column1: {
-    
+    heading: "Platforms",
     items: [
       {
         label: "PRESTIGE RIDESHARE CLUB",
-        href: "/product/prestige-rideshare-club",
+        href: "https://prestigerideshareclub.com.au/",
         logo: "/images/partnerships/partner-1.png",
       },
       {
         label: "PTRS CLUB",
-        href: "/product/platinum-taxi-ride-share-club",
+        href: "https://www.ptrsclub.com.au/",
         logo: "/images/partnerships/partner-2.png",
       },
       {
         label: "Brisbane Rideshare Club",
-        href: "/product/bristane-rideshare-club",
+        href: "https://thebrc.com.au/",
         logo: "/images/partnerships/partner-3.png",
       },
     ],
   },
 
   column2: {
-    
+    heading: "Solutions",
     items: [
       {
         label: "CHOICE RIDESHARE CLUB",
-        href: "/product/choice-rideshare-club",
+        href: "https://fcrc.au/",
         logo: "/images/partnerships/partner-4.png",
       },
       {
         label: "PRESTIGE RIDESHARE CLUB",
-        href: "/product/prestige-rideshare-club",
+        href: "https://prestigerideshareclub.com.au/",
         logo: "/images/partnerships/partner-1.png",
       },
       {
         label: "PTRS CLUB",
-        href: "/product/platinum-taxi-ride-share-club",
+        href: "https://www.ptrsclub.com.au/",
         logo: "/images/partnerships/partner-2.png",
       },
     ],
@@ -68,7 +67,6 @@ export default function Navbar() {
   return (
     <header className="relative w-full border-b border-gray-100 bg-white">
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-10">
-
         {/* Logo */}
         <Link href="/" className="flex shrink-0 items-center">
           <Image
@@ -84,14 +82,17 @@ export default function Navbar() {
         {/* Desktop Navigation */}
         <ul className="hidden items-center gap-8 text-sm font-medium text-brand-dark md:flex">
           {NAV_LINKS.map((link) => {
-            const isActive =
-              link.href === "/"
+            const isProduct = link.label === "Product";
+
+            const isActive = isProduct
+              ? pathname.startsWith("/product")
+              : link.href === "/"
                 ? pathname === "/"
                 : pathname === link.href ||
                   pathname.startsWith(`${link.href}/`);
 
             {/* Product */}
-            if (link.label === "Product") {
+            if (isProduct) {
               return (
                 <li
                   key={link.label}
@@ -102,6 +103,9 @@ export default function Navbar() {
                   <button
                     type="button"
                     className="relative flex items-center gap-1 py-1"
+                    onClick={() =>
+                      setIsProductOpen((prev) => !prev)
+                    }
                   >
                     <span
                       className={
@@ -134,7 +138,6 @@ export default function Navbar() {
                     <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-4">
                       <div className="w-[650px] rounded-2xl border border-gray-100 bg-white p-7 shadow-2xl">
                         <div className="grid grid-cols-2 gap-10">
-
                           {/* Platforms */}
                           <div>
                             <h4 className="text-xs font-bold uppercase tracking-wider text-brand-gray">
@@ -144,9 +147,11 @@ export default function Navbar() {
                             <div className="mt-4 flex flex-col gap-2">
                               {PRODUCT_DROPDOWN.column1.items.map(
                                 (item) => (
-                                  <Link
+                                  <a
                                     key={item.label}
                                     href={item.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     onClick={() =>
                                       setIsProductOpen(false)
                                     }
@@ -167,7 +172,7 @@ export default function Navbar() {
                                         {item.label}
                                       </p>
                                     </div>
-                                  </Link>
+                                  </a>
                                 )
                               )}
                             </div>
@@ -182,9 +187,11 @@ export default function Navbar() {
                             <div className="mt-4 flex flex-col gap-2">
                               {PRODUCT_DROPDOWN.column2.items.map(
                                 (item) => (
-                                  <Link
+                                  <a
                                     key={item.label}
                                     href={item.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     onClick={() =>
                                       setIsProductOpen(false)
                                     }
@@ -205,12 +212,11 @@ export default function Navbar() {
                                         {item.label}
                                       </p>
                                     </div>
-                                  </Link>
+                                  </a>
                                 )
                               )}
                             </div>
                           </div>
-
                         </div>
                       </div>
                     </div>
@@ -267,12 +273,79 @@ export default function Navbar() {
         <div className="border-t border-gray-100 bg-white px-6 py-4 md:hidden">
           <ul className="flex flex-col gap-4 text-sm font-medium">
             {NAV_LINKS.map((link) => {
-              const isActive =
-                link.href === "/"
+              const isProduct = link.label === "Product";
+
+              const isActive = isProduct
+                ? pathname.startsWith("/product")
+                : link.href === "/"
                   ? pathname === "/"
                   : pathname === link.href ||
                     pathname.startsWith(`${link.href}/`);
 
+              {/* Mobile Product */}
+              if (isProduct) {
+                return (
+                  <li key={link.label}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setIsProductOpen((prev) => !prev)
+                      }
+                      className={
+                        isActive
+                          ? "flex w-full items-center justify-between font-semibold text-brand-green"
+                          : "flex w-full items-center justify-between text-brand-dark transition-colors hover:text-brand-green"
+                      }
+                    >
+                      <span>{link.label}</span>
+
+                      <ChevronDown
+                        size={16}
+                        className={`transition-transform ${
+                          isProductOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+
+                    {isProductOpen && (
+                      <div className="mt-3 flex flex-col gap-2 pl-3">
+                        {[
+                          ...PRODUCT_DROPDOWN.column1.items,
+                          ...PRODUCT_DROPDOWN.column2.items,
+                        ].map((item, index) => (
+                          <a
+                            key={`${item.label}-${index}`}
+                            href={item.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => {
+                              setIsOpen(false);
+                              setIsProductOpen(false);
+                            }}
+                            className="group flex items-center gap-3 rounded-xl p-2 transition-colors hover:bg-gray-50"
+                          >
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center">
+                              <Image
+                                src={item.logo}
+                                alt={item.label}
+                                width={32}
+                                height={32}
+                                className="h-full w-full object-contain"
+                              />
+                            </div>
+
+                            <p className="text-xs font-semibold text-brand-dark transition-colors group-hover:text-brand-green">
+                              {item.label}
+                            </p>
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </li>
+                );
+              }
+
+              {/* Other Mobile Navigation Links */}
               return (
                 <li key={link.label}>
                   <Link
@@ -304,8 +377,3 @@ export default function Navbar() {
     </header>
   );
 }
-
-
-
-
-
