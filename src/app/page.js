@@ -41,3 +41,9 @@ export default function Home() {
     </>
   );
 }
+
+
+// username -> technaz_website_company 
+// password -> NBRTa0hv9YGyJgrX
+// mongodb+srv://technaz_website_company:NBRTa0hv9YGyJgrX@technaz-website.k9dnn7p.mongodb.net/emailusers
+// app email password -> gdas jdxg flpd zkai

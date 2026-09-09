@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -10,6 +9,11 @@ export default function ContactForm() {
     contact: "",
     message: "",
   });
+  const [status, setStatus] = useState({
+    loading: false,
+    success: null,
+    error: null,
+  });
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -18,8 +22,28 @@ export default function ContactForm() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setStatus({ loading: true, success: null, error: null });
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Something went wrong");
+      }
+
+      setStatus({ loading: false, success: true, error: null });
+      setFormData({ name: "", email: "", contact: "", message: "" });
+    } catch (err) {
+      setStatus({ loading: false, success: false, error: err.message });
+    }
   };
 
   const inputClasses =
@@ -129,10 +153,22 @@ export default function ContactForm() {
 
               <button
                 type="submit"
-                className="mx-auto mt-2 inline-flex items-center justify-center rounded-full bg-brand-green px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-green-dark"
+                disabled={status.loading}
+                className="mx-auto mt-2 inline-flex items-center justify-center rounded-full bg-brand-green px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-green-dark disabled:opacity-60"
               >
-                Submit Information
+                {status.loading ? "Sending..." : "Submit Information"}
               </button>
+
+              {status.success && (
+                <p className="text-center text-sm font-medium text-brand-green">
+                  Thanks! Your message has been sent successfully.
+                </p>
+              )}
+              {status.error && (
+                <p className="text-center text-sm font-medium text-red-600">
+                  {status.error}
+                </p>
+              )}
             </form>
           </div>
         </div>
@@ -140,4 +176,3 @@ export default function ContactForm() {
     </section>
   );
 }
-
