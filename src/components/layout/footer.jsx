@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation"; 
 
 const QUICK_LINKS = [
   { label: "Home", href: "/" },
@@ -37,6 +40,14 @@ const SOCIAL_LINKS = [
 ];
 
 export default function Footer() {
+
+  const pathname = usePathname();
+
+  if (pathname === "/login" || pathname.startsWith("/dashboard")) {
+    return null;                                      
+  }
+
+
   return (
     <footer className="w-full bg-[#303747] text-white">
       <div className="mx-auto max-w-7xl px-6 py-12 lg:px-10 lg:py-14">

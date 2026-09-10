@@ -62,7 +62,12 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isProductOpen, setIsProductOpen] = useState(false);
 
+
   const pathname = usePathname();
+
+  if (pathname === "/login" || pathname.startsWith("/dashboard")) {
+    return null;                                    
+  }
 
   return (
     <header className="relative w-full border-b border-gray-100 bg-white">
