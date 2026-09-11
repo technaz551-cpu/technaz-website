@@ -4,10 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-const EXPERTISE_SLIDES = [
+const DEFAULT_SLIDES = [
   {
-    src: "/images/expertise/expertise-1.jpg",
-    alt: "Technaz discovery workshop assessing business IT requirements in Australia",
+    image: {
+      url: "/images/expertise/expertise-1.jpg",
+      alt: "Technaz discovery workshop assessing business IT requirements in Australia",
+    },
     label: "DISCOVER",
     phase: "Discovery & Assessment",
     description:
@@ -15,8 +17,10 @@ const EXPERTISE_SLIDES = [
     bgColor: "#d9ecd0",
   },
   {
-    src: "/images/expertise/expertise-2.jpg",
-    alt: "Technaz solution design for cloud, security and custom software architecture",
+    image: {
+      url: "/images/expertise/expertise-2.jpg",
+      alt: "Technaz solution design for cloud, security and custom software architecture",
+    },
     label: "DESIGN",
     phase: "Solution Design",
     description:
@@ -24,8 +28,10 @@ const EXPERTISE_SLIDES = [
     bgColor: "#dbe6f7",
   },
   {
-    src: "/images/expertise/expertise-3.jpg",
-    alt: "Technaz software development team building web apps and integrations",
+    image: {
+      url: "/images/expertise/expertise-3.jpg",
+      alt: "Technaz software development team building web apps and integrations",
+    },
     label: "DEVELOP",
     phase: "Agile Development",
     description:
@@ -33,8 +39,10 @@ const EXPERTISE_SLIDES = [
     bgColor: "#f3dde0",
   },
   {
-    src: "/images/expertise/expertise-4.jpg",
-    alt: "Technaz managed IT support and deployment for growing businesses",
+    image: {
+      url: "/images/expertise/expertise-4.jpg",
+      alt: "Technaz managed IT support and deployment for growing businesses",
+    },
     label: "DEPLOY & SUPPORT",
     phase: "Deploy & Ongoing Support",
     description:
@@ -61,11 +69,16 @@ function mixColors(color1, color2, amount) {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-export default function Expertise() {
+export default function Expertise({ content }) {
   const sectionRef = useRef(null);
   const textTrackRef = useRef(null);
   const [progress, setProgress] = useState(0);
   const [textSlideHeight, setTextSlideHeight] = useState(220);
+
+  const slides =
+    content?.expertise?.slides && content.expertise.slides.length > 0
+      ? content.expertise.slides
+      : DEFAULT_SLIDES;
 
   useEffect(() => {
     const measureTextSlide = () => {
@@ -101,24 +114,21 @@ export default function Expertise() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const slideProgress = progress * (EXPERTISE_SLIDES.length - 1);
-  const currentIndex = Math.min(
-    Math.floor(slideProgress),
-    EXPERTISE_SLIDES.length - 1
-  );
-  const nextIndex = Math.min(currentIndex + 1, EXPERTISE_SLIDES.length - 1);
+  const slideProgress = progress * (slides.length - 1);
+  const currentIndex = Math.min(Math.floor(slideProgress), slides.length - 1);
+  const nextIndex = Math.min(currentIndex + 1, slides.length - 1);
   const transitionProgress = slideProgress - currentIndex;
 
   const backgroundColor = mixColors(
-    EXPERTISE_SLIDES[currentIndex].bgColor,
-    EXPERTISE_SLIDES[nextIndex].bgColor,
+    slides[currentIndex].bgColor,
+    slides[nextIndex].bgColor,
     transitionProgress
   );
 
-  const currentSlide = EXPERTISE_SLIDES[currentIndex];
-  const nextSlide = EXPERTISE_SLIDES[nextIndex];
+  const currentSlide = slides[currentIndex];
+  const nextSlide = slides[nextIndex];
 
-  const imageClips = EXPERTISE_SLIDES.map((_, index) => {
+  const imageClips = slides.map((_, index) => {
     if (index === 0) return "inset(0 0 0% 0)";
     const layerProgress = Math.max(0, Math.min(1, slideProgress - (index - 1)));
     return `inset(0 0 ${100 - layerProgress * 100}% 0)`;
@@ -157,9 +167,9 @@ export default function Expertise() {
                   transform: `translateY(-${textScrollOffset}px)`,
                 }}
               >
-                {EXPERTISE_SLIDES.map((slide) => (
+                {slides.map((slide, index) => (
                   <div
-                    key={slide.label}
+                    key={`${slide.label}-${index}`}
                     className="flex h-[190px] flex-col justify-start sm:h-[210px] md:h-[220px]"
                   >
                     <h3 className="text-lg font-bold text-brand-dark md:text-xl">
@@ -181,9 +191,9 @@ export default function Expertise() {
             </Link>
 
             <div className="mt-8 flex gap-2" aria-hidden="true">
-              {EXPERTISE_SLIDES.map((slide, index) => (
+              {slides.map((slide, index) => (
                 <span
-                  key={slide.label}
+                  key={`${slide.label}-dot-${index}`}
                   className="h-1.5 rounded-full transition-all duration-300"
                   style={{
                     width: index === currentIndex ? "2rem" : "0.5rem",
@@ -206,9 +216,9 @@ export default function Expertise() {
               }}
             >
               <div className="relative h-full w-full overflow-hidden rounded-2xl">
-                {EXPERTISE_SLIDES.map((slide, index) => (
+                {slides.map((slide, index) => (
                   <div
-                    key={slide.src}
+                    key={slide.image?.url || index}
                     className="absolute inset-0"
                     style={{
                       zIndex: index + 1,
@@ -216,8 +226,8 @@ export default function Expertise() {
                     }}
                   >
                     <Image
-                      src={slide.src}
-                      alt={slide.alt}
+                      src={slide.image?.url}
+                      alt={slide.image?.alt || slide.label}
                       fill
                       priority={index === 0}
                       sizes="(max-width: 768px) 100vw, 500px"
@@ -240,8 +250,8 @@ export default function Expertise() {
       </div>
 
       <div className="sr-only">
-        {EXPERTISE_SLIDES.map((slide) => (
-          <article key={slide.label}>
+        {slides.map((slide, index) => (
+          <article key={`${slide.label}-sr-${index}`}>
             <h3>{slide.phase}</h3>
             <p>{slide.description}</p>
           </article>

@@ -3,34 +3,42 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 
-const SERVICES = [
+const DEFAULT_SERVICES = [
   {
-    src: "/images/services/service-1.jpg",
-    alt: "Managed IT services and infrastructure monitoring by Technaz Australia",
+    image: {
+      url: "/images/services/service-1.jpg",
+      alt: "Managed IT services and infrastructure monitoring by Technaz Australia",
+    },
     title: "Managed IT",
     desc: "Proactive monitoring and support for your entire infrastructure.",
   },
   {
-    src: "/images/services/service-2.jpg",
-    alt: "Cloud solutions and Microsoft 365 migration services in Australia",
+    image: {
+      url: "/images/services/service-2.jpg",
+      alt: "Cloud solutions and Microsoft 365 migration services in Australia",
+    },
     title: "Cloud Solutions",
     desc: "Migration, optimisation and management across Azure, AWS and Microsoft 365.",
   },
   {
-    src: "/images/services/service-3.jpg",
-    alt: "Custom software development tailored for Australian businesses",
+    image: {
+      url: "/images/services/service-3.jpg",
+      alt: "Custom software development tailored for Australian businesses",
+    },
     title: "Custom Software",
     desc: "Tailored applications built around how your business actually works.",
   },
   {
-    src: "/images/services/service-4.jpg",
-    alt: "Professional web development and SaaS application building",
+    image: {
+      url: "/images/services/service-4.jpg",
+      alt: "Professional web development and SaaS application building",
+    },
     title: "Web Development",
     desc: "Fast, modern websites and web apps built for growth.",
   },
 ];
 
-export default function Services() {
+export default function Services({ content }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const scrollTimeout = useRef(null);
@@ -61,6 +69,21 @@ export default function Services() {
 
   const isPaused = isHovered || isScrolling;
 
+  const servicesContent = content?.services;
+  const heading =
+    servicesContent?.heading || "Services built around your business";
+  const description1 =
+    servicesContent?.description1 ||
+    "Technaz is your single technology partner for managed IT, cloud solutions, cyber security and custom software development. We help growing Australian businesses simplify their IT stack, reduce downtime, and scale with confidence — from day-to-day support and DevOps to web development, SaaS builds and UI/UX design.";
+  const description2 =
+    servicesContent?.description2 ||
+    "Every engagement comes with clear SLAs, transparent communication and no jargon — so your team always knows what is happening, what it costs, and what comes next.";
+
+  const items =
+    servicesContent?.items && servicesContent.items.length > 0
+      ? servicesContent.items
+      : DEFAULT_SERVICES;
+
   return (
     <section
       id="services"
@@ -68,21 +91,15 @@ export default function Services() {
     >
       <div className="mx-auto max-w-5xl px-6 text-center lg:px-10">
         <h2 className="text-balance text-2xl font-bold tracking-tight text-brand-dark sm:text-3xl md:text-4xl">
-          Services built around your business
+          {heading}
         </h2>
 
         <p className="mx-auto mt-6 max-w-4xl text-pretty text-base leading-7 text-brand-gray sm:mt-8 sm:text-lg sm:leading-8">
-          Technaz is your single technology partner for managed IT, cloud
-          solutions, cyber security and custom software development. We help
-          growing Australian businesses simplify their IT stack, reduce
-          downtime, and scale with confidence — from day-to-day support and
-          DevOps to web development, SaaS builds and UI/UX design.
+          {description1}
         </p>
 
         <p className="mx-auto mt-4 max-w-3xl text-pretty text-sm leading-6 text-brand-gray/90 sm:text-base sm:leading-7">
-          Every engagement comes with clear SLAs, transparent communication and
-          no jargon — so your team always knows what is happening, what it
-          costs, and what comes next.
+          {description2}
         </p>
       </div>
 
@@ -99,15 +116,15 @@ export default function Services() {
             backfaceVisibility: "hidden",
           }}
         >
-          {[...SERVICES, ...SERVICES].map((service, i) => (
+          {[...items, ...items].map((service, i) => (
             <article
               key={i}
               className="group/card relative h-[380px] w-[260px] flex-shrink-0 overflow-visible sm:h-[400px] sm:w-[280px] md:h-[420px] md:w-[300px] lg:h-[440px] lg:w-[320px]"
             >
               <div className="relative h-full w-full overflow-hidden rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-transform duration-300 ease-out group-hover/card:-translate-y-[5.5rem]">
                 <Image
-                  src={service.src}
-                  alt={service.alt}
+                  src={service.image?.url || service.src}
+                  alt={service.image?.alt || service.alt || service.title}
                   fill
                   sizes="(max-width: 640px) 260px, (max-width: 768px) 280px, 320px"
                   className="object-cover"

@@ -1,3 +1,5 @@
+import dbConnect from "@/lib/dbConnect";
+import HomeContent from "@/models/HomeContent";
 import Hero from "@/components/home/Hero";
 import ServicesBar from "@/components/home/ServicesBar";
 import Services from "@/components/home/Services";
@@ -20,7 +22,11 @@ export const metadata = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
+  await dbConnect();
+  const homeContent = JSON.parse(
+    JSON.stringify(await HomeContent.findOne({}).lean())
+  );
   return (
     <>
       <script
@@ -28,10 +34,10 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
       />
       <main>
-        <Hero />
+        <Hero content={homeContent} />
         <ServicesBar />
-        <Services />
-        <Expertise />
+        <Services content={homeContent} />
+        <Expertise content={homeContent}/>
         <div className="partners-screen">
           <Partnerships />
         </div>
