@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 
-const FAQ_ITEMS = [
+const DEFAULT_ITEMS = [
   {
     question: "How quickly do you respond to IT support issues?",
     answer:
@@ -72,8 +72,14 @@ function FAQItem({ item, isOpen, onToggle }) {
   );
 }
 
-export default function FAQ() {
+export default function FAQ({ content }) {
   const [openIndex, setOpenIndex] = useState(0);
+
+  const heading = content?.faq?.heading || "Questions we hear often?";
+  const items =
+    content?.faq?.items && content.faq.items.length > 0
+      ? content.faq.items
+      : DEFAULT_ITEMS;
 
   const toggle = (index) => {
     setOpenIndex((prev) => (prev === index ? -1 : index));
@@ -90,13 +96,13 @@ export default function FAQ() {
           id="faq-heading"
           className="mb-6 text-center text-2xl font-bold text-brand-dark md:mb-8 md:text-3xl"
         >
-          Questions we hear often?
+          {heading}
         </h2>
 
         <div className="flex flex-col gap-4">
-          {FAQ_ITEMS.map((item, i) => (
+          {items.map((item, i) => (
             <FAQItem
-              key={item.question}
+              key={`${item.question}-${i}`}
               item={item}
               isOpen={openIndex === i}
               onToggle={() => toggle(i)}

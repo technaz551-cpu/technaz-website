@@ -21,8 +21,23 @@ const NAV_ITEMS = [
     basePath: "/dashboard/pages/home",
     children: [
       { label: "Hero Section", href: "/dashboard/pages/home" },
+      { label: "Services Bar", href: "/dashboard/pages/home/services-bar" },
       { label: "Services", href: "/dashboard/pages/home/services" },
       { label: "Expertise", href: "/dashboard/pages/home/expertise" },
+      { label: "Partnerships", href: "/dashboard/pages/home/partnerships" },
+      { label: "Process", href: "/dashboard/pages/home/process" },
+      { label: "FAQ", href: "/dashboard/pages/home/faq" },
+    ],
+  },
+  {
+    label: "About",
+    icon: Home,
+    basePath: "/dashboard/pages/about",
+    children: [
+      { label: "Hero Section", href: "/dashboard/pages/about" },
+      { label: "Story", href: "/dashboard/pages/about/story" },
+      { label: "Mission", href: "/dashboard/pages/about/mission" },
+      { label: "Value", href: "/dashboard/pages/about/value" },
     ],
   },
   { label: "Team", href: "/dashboard/team", icon: Users },

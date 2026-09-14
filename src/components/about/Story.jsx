@@ -1,53 +1,21 @@
-// import Image from "next/image";
-
-// export default function Story() {
-//   return (
-//     <section className="bg-brand-green-light py-16 md:py-24">
-//       <div className="mx-auto max-w-7xl px-6 lg:px-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-//         <div>
-//           <h2 className="text-2xl md:text-3xl font-bold text-brand-dark">
-//             Our story
-//           </h2>
-//           <div className="mt-3 h-px w-full max-w-xs bg-brand-dark" />
-//           <p className="mt-5 text-sm md:text-base text-gray-700 leading-relaxed max-w-md">
-//             At Technaz, we pioneer in crafting innovative strategies and
-//             providing tailored solutions perfect for your business needs.
-//             From initial vision and conceptualization to streamlined
-//             execution, we transform your unique ideas into impactful and
-//             brand-elevating results.
-//           </p>
-//         </div>
-
-//         <div className="relative h-[220px] md:h-[260px] w-full md:w-[90%] md:ml-auto rounded-2xl overflow-hidden p-1">
-//           <div className="relative w-full h-full rounded-xl overflow-hidden">
-//             <Image
-//               src="/images/about/story.jpg"
-//               alt="Technaz team collaborating"
-//               fill
-//               sizes="(max-width: 768px) 100vw, 50vw"
-//               className="object-cover"
-//             />
-//           </div>
-//           <div className="absolute bottom-4 left-4 bg-white rounded-lg px-4 py-2 shadow-md">
-//             <span className="text-sm font-bold text-brand-dark tracking-wide">
-//               INNOVATE
-//             </span>
-//           </div>
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
-
-
 "use client";
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
-export default function Story() {
+export default function Story({ content }) {
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
+
+  const story = content?.story;
+  const eyebrow = story?.eyebrow || "About Us";
+  const heading = story?.heading || "Our Story";
+  const description =
+    story?.description ||
+    "At Technaz, we pioneer in crafting innovative strategies and providing tailored solutions perfect for your business needs. From initial vision and conceptualization to streamlined execution, we transform your unique ideas into impactful and brand-elevating results.";
+  const badgeText = story?.badgeText || "Innovate";
+  const image = story?.image?.url || "/images/about/story.jpg";
+  const imageAlt = story?.image?.alt || "Technaz team collaborating";
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -71,7 +39,6 @@ export default function Story() {
       className="bg-brand-green-light py-16 md:py-24 overflow-hidden"
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-10 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
-        {/* Left: Text content - fades/slides in from the left */}
         <div
           className={`transition-all duration-700 ease-out ${
             isVisible
@@ -80,11 +47,11 @@ export default function Story() {
           }`}
         >
           <span className="inline-block text-xs font-bold uppercase tracking-widest text-brand-green">
-            About Us
+            {eyebrow}
           </span>
 
           <h2 className="mt-3 text-3xl md:text-4xl font-bold text-brand-dark leading-tight">
-            Our Story
+            {heading}
           </h2>
 
           <div
@@ -94,15 +61,10 @@ export default function Story() {
           />
 
           <p className="mt-6 text-sm md:text-base text-gray-700 leading-relaxed md:leading-8 max-w-lg">
-            At Technaz, we pioneer in crafting innovative strategies and
-            providing tailored solutions perfect for your business needs.
-            From initial vision and conceptualization to streamlined
-            execution, we transform your unique ideas into impactful and
-            brand-elevating results.
+            {description}
           </p>
         </div>
 
-        {/* Right: Image - fades/slides in from the right, slightly delayed */}
         <div
           className={`relative h-[260px] sm:h-[320px] md:h-[380px] w-full md:w-[92%] md:ml-auto transition-all duration-700 delay-150 ease-out ${
             isVisible
@@ -111,15 +73,15 @@ export default function Story() {
           }`}
         >
           <div
-  className="relative h-full w-full overflow-hidden rounded-[28px]"
-  style={{
-    boxShadow:
-      "18px -18px 0 color-mix(in srgb, var(--color-brand-green) 65%, transparent)",
-  }}
->
+            className="relative h-full w-full overflow-hidden rounded-[28px]"
+            style={{
+              boxShadow:
+                "18px -18px 0 color-mix(in srgb, var(--color-brand-green) 65%, transparent)",
+            }}
+          >
             <Image
-              src="/images/about/story.jpg"
-              alt="Technaz team collaborating"
+              src={image}
+              alt={imageAlt}
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover"
@@ -133,7 +95,7 @@ export default function Story() {
           >
             <span className="h-2 w-2 rounded-full bg-brand-green" />
             <span className="text-xs font-bold uppercase tracking-wide text-brand-dark">
-              Innovate
+              {badgeText}
             </span>
           </div>
         </div>

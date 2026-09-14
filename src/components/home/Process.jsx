@@ -4,10 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
-const PROCESS_STEPS = [
+const DEFAULT_STEPS = [
   {
     label: "Discovery & Planning",
-    shortLabel: "Discovery",
     tagline: "Clarity before commitment",
     description:
       "We begin every engagement with a structured discovery phase — reviewing your infrastructure, workflows, pain points and growth targets. This gives Australian businesses a clear technology roadmap before any build or migration starts.",
@@ -26,7 +25,6 @@ const PROCESS_STEPS = [
   },
   {
     label: "Architecture & Design",
-    shortLabel: "Design",
     tagline: "Architecture built for scale",
     description:
       "Our architects and designers translate discovery insights into secure, scalable solution designs — covering cloud architecture, cyber security, UX flows and technical specifications aligned to your budget and compliance needs.",
@@ -45,7 +43,6 @@ const PROCESS_STEPS = [
   },
   {
     label: "Build & Integrate",
-    shortLabel: "Development",
     tagline: "Agile delivery, visible progress",
     description:
       "Engineers build in agile sprints — delivering web apps, API integrations, DevOps pipelines and custom software with regular demos. You see working features early, provide feedback often, and launch with confidence.",
@@ -64,7 +61,6 @@ const PROCESS_STEPS = [
   },
   {
     label: "Launch & Ongoing Care",
-    shortLabel: "Deploy & Support",
     tagline: "Launch with ongoing care",
     description:
       "We handle production deployment, performance monitoring and proactive managed IT support — with clear SLAs, responsive helpdesk and continuous improvements so your technology keeps pace with your business.",
@@ -83,9 +79,18 @@ const PROCESS_STEPS = [
   },
 ];
 
-export default function Process() {
+export default function Process({ content }) {
   const sectionRef = useRef(null);
   const [progress, setProgress] = useState(0);
+
+  const subheading =
+    content?.process?.subheading ||
+    "Where custom software meets boundless potential";
+
+  const steps =
+    content?.process?.steps && content.process.steps.length > 0
+      ? content.process.steps
+      : DEFAULT_STEPS;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -107,15 +112,12 @@ export default function Process() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const slideProgress = progress * (PROCESS_STEPS.length - 1);
-  const activeIndex = Math.min(
-    Math.round(slideProgress),
-    PROCESS_STEPS.length - 1
-  );
+  const slideProgress = progress * (steps.length - 1);
+  const activeIndex = Math.min(Math.round(slideProgress), steps.length - 1);
 
-  const indicatorHeight = 100 / PROCESS_STEPS.length;
+  const indicatorHeight = 100 / steps.length;
   const indicatorTop = slideProgress * indicatorHeight;
-  const activeStep = PROCESS_STEPS[activeIndex];
+  const activeStep = steps[activeIndex];
 
   return (
     <section
@@ -141,16 +143,13 @@ export default function Process() {
             </div>
 
             <p className="mt-2 text-base font-medium text-brand-gray md:text-lg">
-              Where custom software meets boundless potential
+              {subheading}
             </p>
           </header>
 
           <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-[minmax(240px,300px)_1fr] md:gap-8 lg:grid-cols-[minmax(260px,340px)_1fr] lg:gap-12">
             <aside>
-              <nav
-                className="relative md:pl-1"
-                aria-label="Process steps"
-              >
+              <nav className="relative md:pl-1" aria-label="Process steps">
                 <div
                   className="absolute bottom-0 left-0 top-0 hidden w-px bg-gray-200 md:block"
                   aria-hidden="true"
@@ -165,7 +164,7 @@ export default function Process() {
                 </div>
 
                 <ul className="flex flex-row flex-wrap gap-x-4 gap-y-2 md:flex-col md:gap-0 md:pl-6">
-                  {PROCESS_STEPS.map((step, index) => {
+                  {steps.map((step, index) => {
                     const isActive = index === activeIndex;
                     const isPast = index < activeIndex;
 
@@ -214,7 +213,7 @@ export default function Process() {
                       What this includes:
                     </h4>
                     <ul className="mt-2 space-y-1.5">
-                      {activeStep.includes.map((item) => (
+                      {(activeStep.includes || []).map((item) => (
                         <li
                           key={item}
                           className="flex gap-2 text-sm leading-relaxed text-gray-700"
@@ -234,7 +233,7 @@ export default function Process() {
                       Best suited for:
                     </h4>
                     <ul className="mt-2 space-y-1.5">
-                      {activeStep.bestSuitedFor.map((item) => (
+                      {(activeStep.bestSuitedFor || []).map((item) => (
                         <li
                           key={item}
                           className="flex gap-2 text-sm leading-relaxed text-gray-700"
@@ -266,7 +265,7 @@ export default function Process() {
       </div>
 
       <div className="sr-only">
-        {PROCESS_STEPS.map((step) => (
+        {steps.map((step) => (
           <article key={step.label}>
             <h3>
               {step.label} — {step.tagline}

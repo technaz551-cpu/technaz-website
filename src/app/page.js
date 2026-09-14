@@ -35,14 +35,14 @@ export default async function Home() {
       />
       <main>
         <Hero content={homeContent} />
-        <ServicesBar />
+        <ServicesBar content={homeContent}/>
         <Services content={homeContent} />
         <Expertise content={homeContent}/>
         <div className="partners-screen">
-          <Partnerships />
+          <Partnerships content={homeContent}/>
         </div>
-        <Process />
-        <FAQ />
+        <Process content={homeContent}/>
+        <FAQ content={homeContent}/>
       </main>
     </>
   );

@@ -1,52 +1,21 @@
-// import Image from "next/image";
-
-// export default function Mission() {
-//   return (
-//     <section className="bg-white py-16 md:py-24">
-//       <div className="mx-auto max-w-7xl px-6 lg:px-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-//         <div className="relative h-[220px] md:h-[260px] w-full md:w-[90%] rounded-2xl overflow-hidden p-1">
-//           <div className="relative w-full h-full rounded-xl overflow-hidden">
-//             <Image
-//               src="/images/about/mission.jpg"
-//               alt="Technaz team collaborating"
-//               fill
-//               sizes="(max-width: 768px) 100vw, 50vw"
-//               className="object-cover"
-//             />
-//           </div>
-//           <div className="absolute bottom-4 left-4 bg-white rounded-lg px-4 py-2 shadow-md">
-//             <span className="text-sm font-bold text-brand-dark tracking-wide">
-//               INNOVATE
-//             </span>
-//           </div>
-//         </div>
-
-//         <div className="md:pl-8 lg:pl-12">
-//           <h2 className="text-2xl md:text-3xl font-bold text-brand-dark">
-//             Mission
-//           </h2>
-//           <div className="mt-3 h-px w-full max-w-xs bg-brand-dark" />
-//           <p className="mt-5 text-sm md:text-base text-gray-700 leading-relaxed max-w-md text-justify">
-//             Empowering growing Australian businesses with enterprise-grade
-//             technology that is practical, scalable, and cost-effective—helping
-//             you streamline operations, enhance productivity, embrace digital
-//             transformation, and scale with confidence.
-//           </p>
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
-
-
 "use client";
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
-export default function Mission() {
+export default function Mission({ content }) {
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
+
+  const mission = content?.mission;
+  const eyebrow = mission?.eyebrow || "Our Purpose";
+  const heading = mission?.heading || "Mission";
+  const description =
+    mission?.description ||
+    "Empowering growing Australian businesses with enterprise-grade technology that is practical, scalable, and cost-effective—helping you streamline operations, enhance productivity, embrace digital transformation, and scale with confidence.";
+  const badgeText = mission?.badgeText || "Innovate";
+  const image = mission?.image?.url || "/images/about/mission.jpg";
+  const imageAlt = mission?.image?.alt || "Technaz team in a strategy meeting";
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -70,7 +39,6 @@ export default function Mission() {
       className="bg-white py-16 md:py-24 overflow-hidden"
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-10 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
-        {/* Left: Image - fades/slides in from the left */}
         <div
           className={`relative h-[240px] sm:h-[280px] md:h-[340px] w-full md:w-[88%] transition-all duration-700 ease-out ${
             isVisible
@@ -81,19 +49,19 @@ export default function Mission() {
           <div
             className="relative h-full w-full overflow-hidden rounded-[28px]"
             style={{
-              boxShadow: "-18px -18px 0 color-mix(in srgb, var(--color-brand-green) 65%, transparent)",
+              boxShadow:
+                "-18px -18px 0 color-mix(in srgb, var(--color-brand-green) 65%, transparent)",
             }}
           >
             <Image
-              src="/images/about/mission.jpg"
-              alt="Technaz team in a strategy meeting"
+              src={image}
+              alt={imageAlt}
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover"
             />
           </div>
 
-          {/* Innovate Badge */}
           <div
             className={`absolute bottom-5 left-5 flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-lg transition-all duration-500 delay-500 ease-out ${
               isVisible
@@ -102,14 +70,12 @@ export default function Mission() {
             }`}
           >
             <span className="h-2 w-2 rounded-full bg-brand-green" />
-
             <span className="text-xs font-bold uppercase tracking-wide text-brand-dark">
-              Innovate
+              {badgeText}
             </span>
           </div>
         </div>
 
-        {/* Right: Text content */}
         <div
           className={`md:pl-4 lg:pl-8 transition-all duration-700 delay-150 ease-out ${
             isVisible
@@ -118,14 +84,13 @@ export default function Mission() {
           }`}
         >
           <span className="inline-block text-xs font-bold uppercase tracking-widest text-brand-green">
-            Our Purpose
+            {eyebrow}
           </span>
 
           <h2 className="mt-3 text-3xl md:text-4xl font-bold text-brand-dark leading-tight">
-            Mission
+            {heading}
           </h2>
 
-          {/* Green Line */}
           <div
             className={`mt-4 h-1 rounded-full bg-brand-green transition-all duration-700 delay-300 ease-out ${
               isVisible ? "w-16" : "w-0"
@@ -133,10 +98,7 @@ export default function Mission() {
           />
 
           <p className="mt-6 text-sm md:text-base text-gray-700 leading-relaxed md:leading-8 max-w-lg">
-            Empowering growing Australian businesses with enterprise-grade
-            technology that is practical, scalable, and cost-effective—helping
-            you streamline operations, enhance productivity, embrace digital
-            transformation, and scale with confidence.
+            {description}
           </p>
         </div>
       </div>
