@@ -14,7 +14,7 @@ const NAV_LINKS = [
   { label: "Contact", href: "/contact" },
 ];
 
-const PRODUCT_DROPDOWN = {
+const DEFAULT_PRODUCT_DROPDOWN = {
   column1: {
     heading: "Platforms",
     items: [
@@ -58,16 +58,22 @@ const PRODUCT_DROPDOWN = {
   },
 };
 
-export default function Navbar() {
+export default function Navbar({ content }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isProductOpen, setIsProductOpen] = useState(false);
 
-
   const pathname = usePathname();
 
+  // Hide navbar on login and dashboard pages
   if (pathname === "/login" || pathname.startsWith("/dashboard")) {
-    return null;                                    
+    return null;
   }
+
+  const PRODUCT_DROPDOWN =
+    content?.productDropdown &&
+    content.productDropdown.column1?.items?.length > 0
+      ? content.productDropdown
+      : DEFAULT_PRODUCT_DROPDOWN;
 
   return (
     <header className="relative w-full border-b border-gray-100 bg-white">
@@ -96,7 +102,7 @@ export default function Navbar() {
                 : pathname === link.href ||
                   pathname.startsWith(`${link.href}/`);
 
-            {/* Product */}
+            // Product dropdown
             if (isProduct) {
               return (
                 <li
@@ -151,9 +157,9 @@ export default function Navbar() {
 
                             <div className="mt-4 flex flex-col gap-2">
                               {PRODUCT_DROPDOWN.column1.items.map(
-                                (item) => (
+                                (item, index) => (
                                   <a
-                                    key={item.label}
+                                    key={`${item.label}-${index}`}
                                     href={item.href}
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -191,9 +197,9 @@ export default function Navbar() {
 
                             <div className="mt-4 flex flex-col gap-2">
                               {PRODUCT_DROPDOWN.column2.items.map(
-                                (item) => (
+                                (item, index) => (
                                   <a
-                                    key={item.label}
+                                    key={`${item.label}-${index}`}
                                     href={item.href}
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -230,10 +236,13 @@ export default function Navbar() {
               );
             }
 
-            {/* Other Navigation Links */}
+            // Normal navigation links
             return (
               <li key={link.label}>
-                <Link href={link.href} className="relative py-1">
+                <Link
+                  href={link.href}
+                  className="relative py-1"
+                >
                   <span
                     className={
                       isActive
@@ -287,7 +296,7 @@ export default function Navbar() {
                   : pathname === link.href ||
                     pathname.startsWith(`${link.href}/`);
 
-              {/* Mobile Product */}
+              // Mobile Product Dropdown
               if (isProduct) {
                 return (
                   <li key={link.label}>
@@ -350,7 +359,7 @@ export default function Navbar() {
                 );
               }
 
-              {/* Other Mobile Navigation Links */}
+              // Mobile Normal Links
               return (
                 <li key={link.label}>
                   <Link

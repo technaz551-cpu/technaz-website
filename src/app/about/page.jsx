@@ -18,8 +18,8 @@ export default async function AboutPage() {
       <Story content={aboutContent}/>
       <Mission content={aboutContent}/>
       <Value content={aboutContent}/>
-      <Vision />
-      <FAQ />
+      <Vision content={aboutContent}/>
+      <FAQ content={aboutContent}/>
     </main>
   );
 }

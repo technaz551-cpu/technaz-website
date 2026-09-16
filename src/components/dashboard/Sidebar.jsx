@@ -38,8 +38,20 @@ const NAV_ITEMS = [
       { label: "Story", href: "/dashboard/pages/about/story" },
       { label: "Mission", href: "/dashboard/pages/about/mission" },
       { label: "Value", href: "/dashboard/pages/about/value" },
+      { label: "Vision", href: "/dashboard/pages/about/vision" },
+      { label: "FAQ", href: "/dashboard/pages/about/faq" },
     ],
   },
+  {
+    label: "Services",
+    icon: Home,
+    basePath: "/dashboard/pages/services",
+    children: [
+      { label: "Hero Section", href: "/dashboard/pages/services" },
+      { label: "Service Cards", href: "/dashboard/pages/services/features" },
+    ],
+  },
+  { label: "Navbar Menu", href: "/dashboard/pages/navbar", icon: Home },
   { label: "Team", href: "/dashboard/team", icon: Users },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ];

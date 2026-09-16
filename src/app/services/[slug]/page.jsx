@@ -2,78 +2,32 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-
-const FEATURES = {
-  "custom-software-development": {
-    title: "Custom Software Development",
-    description:
-      "We design and engineer tailored software solutions around the way your business actually operates—from intelligent internal platforms and automated workflow systems to scalable customer-facing applications that improve efficiency, enhance experiences, and support long-term growth.",
-    imageSrc: "/images/services/process-1.jpg",
-  },
-  "web-development": {
-    title: "Web Development",
-    description:
-      "We build fast, accessible, and search-optimized web experiences using modern technologies and frameworks—designed to deliver seamless user experiences, strengthen digital visibility, and drive measurable business results.",
-    imageSrc: "/images/services/service-4.jpg",
-  },
-  "mobile-app-development": {
-    title: "Mobile App Development",
-    description:
-      "We create native and cross-platform mobile applications that feel fast, intuitive, and reliable—built around real user journeys so your customers can book, buy, and engage from anywhere, with the same quality they expect from your web experience.",
-    imageSrc: "/images/services/service-3.jpg",
-  },
-  "ui-ux-design": {
-    title: "UI/UX Design",
-    description:
-      "We design clear, conversion-focused interfaces that make complex products feel simple—from research and wireframes through to polished visual systems that keep every screen consistent, accessible, and aligned with how your customers actually work.",
-    imageSrc: "/images/services/expertise-2.jpg",
-  },
-  "ai-automation": {
-    title: "AI & Automation",
-    description:
-      "We help businesses automate repetitive work and add intelligent features where they create real value—from workflow automation and data-driven tools to practical AI integrations that reduce manual effort, improve accuracy, and scale with your operations.",
-    imageSrc: "/images/services/service-1.jpg",
-  },
-  "dedicated-development-teams": {
-    title: "Dedicated Development Teams",
-    description:
-      "We provide dedicated engineers who work as an extension of your team—aligned to your tools, timelines, and product goals so you can scale delivery without the overhead of hiring, onboarding, and managing a full in-house development function.",
-    imageSrc: "/images/services/expertise-3.jpg",
-  },
-  "cloud-devops": {
-    title: "Cloud & DevOps",
-    description:
-      "We design, migrate, and operate cloud environments with reliable CI/CD and infrastructure practices—so releases are faster, systems stay secure, and your platforms can scale as demand grows across Azure, AWS, and Microsoft 365.",
-    imageSrc: "/images/services/service-2.jpg",
-  },
-  "product-development": {
-    title: "Product Development",
-    description:
-      "We take products from idea to launch with a clear path through discovery, design, build, and iteration—helping you validate features early, ship with confidence, and keep improving after go-live with the same team that built it.",
-    imageSrc: "/images/services/expertise-4.jpg",
-  },
-};
+import dbConnect from "@/lib/dbConnect";
+import ServicesContent from "@/models/ServicesContent";
 
 export default async function ServiceDetailPage({ params }) {
   const { slug } = await params;
-  const service = FEATURES[slug];
+
+  await dbConnect();
+  const content = JSON.parse(
+    JSON.stringify(await ServicesContent.findOne({}).lean())
+  );
+
+  const features = content?.features || [];
+  const service = features.find((f) => f.slug === slug);
 
   if (!service) {
     notFound();
   }
 
-  const otherServices = Object.entries(FEATURES).filter(
-    ([key]) => key !== slug
-  );
+  const otherServices = features.filter((f) => f.slug !== slug);
 
   return (
     <main className="bg-white">
-      {/* Hero section - grid background + image */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-y-0 left-0 w-full md:w-1/2 h-full pointer-events-none bg-grid-light" />
 
         <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-12 md:py-20 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-          {/* Left: Text */}
           <div>
             <Link
               href="/services"
@@ -87,7 +41,6 @@ export default async function ServiceDetailPage({ params }) {
               {service.title}
             </h1>
 
-            {/* Arrow line divider */}
             <div className="mt-4 flex items-center max-w-md">
               <span className="text-brand-green text-base leading-none">◆</span>
               <span className="flex-1 h-[1.5px] bg-brand-green mx-1"></span>
@@ -106,12 +59,11 @@ export default async function ServiceDetailPage({ params }) {
             </Link>
           </div>
 
-          {/* Right: Image with dashed border */}
-          <div className="relative h-[260px] sm:h-[320px] md:h-[380px] rounded-2xl  overflow-hidden p-1">
+          <div className="relative h-[260px] sm:h-[320px] md:h-[380px] rounded-2xl overflow-hidden p-1">
             <div className="relative w-full h-full rounded-xl overflow-hidden">
               <Image
-                src={service.imageSrc}
-                alt={service.title}
+                src={service.image?.url}
+                alt={service.image?.alt || service.title}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
@@ -121,7 +73,6 @@ export default async function ServiceDetailPage({ params }) {
         </div>
       </section>
 
-      {/* CTA strip */}
       <section className="bg-brand-green-light py-12 md:py-16">
         <div className="mx-auto max-w-3xl px-6 lg:px-10 text-center">
           <h2 className="text-xl md:text-2xl font-bold text-brand-dark">
@@ -140,7 +91,6 @@ export default async function ServiceDetailPage({ params }) {
         </div>
       </section>
 
-      {/* Explore other services */}
       <section className="py-16 md:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <h2 className="text-xl md:text-2xl font-bold text-brand-dark text-center">
@@ -148,10 +98,10 @@ export default async function ServiceDetailPage({ params }) {
           </h2>
 
           <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {otherServices.map(([key, item]) => (
+            {otherServices.map((item) => (
               <Link
-                key={key}
-                href={`/services/${key}`}
+                key={item.slug}
+                href={`/services/${item.slug}`}
                 className="group flex items-center justify-between gap-3 rounded-xl border border-brand-border px-5 py-4 hover:border-brand-green hover:bg-brand-green-light transition-colors"
               >
                 <span className="text-sm font-semibold text-brand-dark">

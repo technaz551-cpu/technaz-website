@@ -2,6 +2,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { SITE } from "@/lib/site";
+import dbConnect from "@/lib/dbConnect";
+import NavbarContent from "@/models/NavbarContent";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -46,7 +48,12 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  await dbConnect();
+  const navbarContent = JSON.parse(
+    JSON.stringify(await NavbarContent.findOne({}).lean())
+  );
+
   return (
     <html
       lang="en"
@@ -57,7 +64,7 @@ export default function RootLayout({ children }) {
         className="min-h-full flex flex-col font-sans"
         suppressHydrationWarning
       >
-        <Navbar />
+        <Navbar content={navbarContent} />
         {children}
         <Footer />
       </body>

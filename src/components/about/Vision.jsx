@@ -3,9 +3,19 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
-export default function Vision() {
+export default function Vision({ content }) {
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
+
+  const vision = content?.vision;
+  const eyebrow = vision?.eyebrow || "Our Direction";
+  const heading = vision?.heading || "Vision";
+  const description =
+    vision?.description ||
+    "Empowering growing Australian businesses with enterprise-grade technology that is practical, scalable, and cost-effective—helping you streamline operations, enhance productivity, embrace digital transformation, and scale with confidence.";
+  const badgeText = vision?.badgeText || "Innovate";
+  const image = vision?.image?.url || "/images/about/vision.jpg";
+  const imageAlt = vision?.image?.alt || "Technaz team collaborating";
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -29,8 +39,6 @@ export default function Vision() {
       className="bg-white py-16 md:py-24 overflow-hidden"
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-10 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
-
-        {/* Left: Image */}
         <div
           className={`relative h-[240px] sm:h-[280px] md:h-[340px] w-full md:w-[88%] transition-all duration-700 ease-out ${
             isVisible
@@ -46,15 +54,14 @@ export default function Vision() {
             }}
           >
             <Image
-              src="/images/about/vision.jpg"
-              alt="Technaz team collaborating"
+              src={image}
+              alt={imageAlt}
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover"
             />
           </div>
 
-          {/* Innovate Badge */}
           <div
             className={`absolute bottom-5 left-5 flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-lg transition-all duration-500 delay-500 ease-out ${
               isVisible
@@ -63,14 +70,12 @@ export default function Vision() {
             }`}
           >
             <span className="h-2 w-2 rounded-full bg-brand-green" />
-
             <span className="text-xs font-bold uppercase tracking-wide text-brand-dark">
-              Innovate
+              {badgeText}
             </span>
           </div>
         </div>
 
-        {/* Right: Text content */}
         <div
           className={`md:pl-4 lg:pl-8 transition-all duration-700 delay-150 ease-out ${
             isVisible
@@ -79,14 +84,13 @@ export default function Vision() {
           }`}
         >
           <span className="inline-block text-xs font-bold uppercase tracking-widest text-brand-green">
-            Our Direction
+            {eyebrow}
           </span>
 
           <h2 className="mt-3 text-3xl md:text-4xl font-bold text-brand-dark leading-tight">
-            Vision
+            {heading}
           </h2>
 
-          {/* Green Line */}
           <div
             className={`mt-4 h-1 rounded-full bg-brand-green transition-all duration-700 delay-300 ease-out ${
               isVisible ? "w-16" : "w-0"
@@ -94,13 +98,9 @@ export default function Vision() {
           />
 
           <p className="mt-6 text-sm md:text-base text-gray-700 leading-relaxed md:leading-8 max-w-lg">
-            Empowering growing Australian businesses with enterprise-grade
-            technology that is practical, scalable, and cost-effective—helping
-            you streamline operations, enhance productivity, embrace digital
-            transformation, and scale with confidence.
+            {description}
           </p>
         </div>
-
       </div>
     </section>
   );
