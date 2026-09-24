@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation"; 
+import { usePathname } from "next/navigation";
 
 const QUICK_LINKS = [
   { label: "Home", href: "/" },
   { label: "About", href: "/#about" },
   { label: "Services", href: "/#services" },
-  { label: "Product", href: "/#product" },
+  { label: "Products", href: "/products" },
+  { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -21,7 +22,7 @@ const SERVICES = [
   "DevOps & Support",
 ];
 
-const SOCIAL_LINKS = [
+const DEFAULT_SOCIAL = [
   {
     label: "Instagram",
     href: "https://instagram.com",
@@ -39,14 +40,24 @@ const SOCIAL_LINKS = [
   },
 ];
 
-export default function Footer() {
-
+export default function Footer({ contactContent }) {
   const pathname = usePathname();
 
   if (pathname === "/login" || pathname.startsWith("/dashboard")) {
-    return null;                                      
+    return null;
   }
 
+  const emails = contactContent?.emails?.length
+    ? contactContent.emails
+    : [{ value: "hello@technaz.com.au" }];
+  const offices = contactContent?.offices || [];
+  const primaryOffice = offices[0];
+  const socialLinks = contactContent?.socialLinks?.length
+    ? contactContent.socialLinks
+    : DEFAULT_SOCIAL;
+  const footerBlurb =
+    contactContent?.footerBlurb ||
+    "Australia's trusted technology partner — we build, support and scale IT for growing businesses.";
 
   return (
     <footer className="w-full bg-[#303747] text-white">
@@ -63,8 +74,7 @@ export default function Footer() {
               />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/80">
-              Australia&apos;s trusted technology partner — we build, support
-              and scale IT for growing businesses.
+              {footerBlurb}
             </p>
           </div>
 
@@ -109,20 +119,41 @@ export default function Footer() {
               Get In Touch
             </h3>
             <ul className="mt-4 space-y-2.5 text-sm text-white/75">
-              <li>
-                <a
-                  href="mailto:hello@technaz.com.au"
-                  className="transition-colors hover:text-brand-green"
-                >
-                  hello@technaz.com.au
-                </a>
-              </li>
-              <li>Australia-wide support</li>
-              <li>Mon – Fri, 8:00am – 6:00pm AEST</li>
+              {emails.map((item, i) => (
+                <li key={`${item.value}-${i}`}>
+                  <a
+                    href={`mailto:${item.value}`}
+                    className="transition-colors hover:text-brand-green"
+                  >
+                    {item.value}
+                  </a>
+                </li>
+              ))}
+              {offices.length > 0 ? (
+                offices.slice(0, 3).map((office, i) => (
+                  <li key={`${office.name}-${i}`} className="pt-1">
+                    <span className="font-semibold text-white/90">
+                      {office.name}
+                    </span>
+                    {office.address ? (
+                      <span className="mt-0.5 block text-white/70">
+                        {office.address}
+                      </span>
+                    ) : null}
+                    {office.openingHours ? (
+                      <span className="mt-0.5 block text-white/60">
+                        {office.openingHours}
+                      </span>
+                    ) : null}
+                  </li>
+                ))
+              ) : primaryOffice ? null : (
+                <li>Mon – Fri, 8:00am – 6:00pm AEST</li>
+              )}
             </ul>
 
             <div className="mt-6 flex items-center gap-3">
-              {SOCIAL_LINKS.map((social) => (
+              {socialLinks.map((social) => (
                 <a
                   key={social.label}
                   href={social.href}
@@ -146,7 +177,9 @@ export default function Footer() {
 
         <div className="mt-10 border-t border-dashed border-[#858b96] pt-6">
           <div className="flex flex-col items-center justify-between gap-3 text-center text-xs text-white/60 sm:flex-row sm:text-left">
-            <p>&copy; {new Date().getFullYear()} Technaz. All rights reserved.</p>
+            <p>
+              &copy; {new Date().getFullYear()} Technaz. All rights reserved.
+            </p>
             <p>Managed IT &amp; Custom Software for Australian Businesses</p>
           </div>
         </div>

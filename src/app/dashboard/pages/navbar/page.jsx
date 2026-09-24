@@ -4,6 +4,11 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Upload, Loader2, Trash2, Plus } from "lucide-react";
+import {
+  useGetNavbarContentQuery,
+  useUpdateNavbarContentMutation,
+  useUploadFileMutation,
+} from "@/store/api/technazApi";
 
 const EMPTY_COLUMN = { heading: "", items: [] };
 const EMPTY_ITEM = { label: "", href: "", logo: "" };
@@ -11,46 +16,36 @@ const EMPTY_ITEM = { label: "", href: "", logo: "" };
 export default function EditNavbarDropdown() {
   const [column1, setColumn1] = useState(EMPTY_COLUMN);
   const [column2, setColumn2] = useState(EMPTY_COLUMN);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingKey, setUploadingKey] = useState(null);
   const [message, setMessage] = useState(null);
+  const { data, isLoading, isError } = useGetNavbarContentQuery();
+  const [updateNavbarContent] = useUpdateNavbarContentMutation();
+  const [uploadFile] = useUploadFileMutation();
 
   useEffect(() => {
-    async function loadContent() {
-      try {
-        const res = await fetch("/api/navbar");
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || "Failed to load content.");
-        }
-
-        const dropdown = data.content?.productDropdown;
-
-        if (dropdown) {
-          setColumn1({
-            heading: dropdown.column1?.heading || "",
-            items: dropdown.column1?.items || [],
-          });
-
-          setColumn2({
-            heading: dropdown.column2?.heading || "",
-            items: dropdown.column2?.items || [],
-          });
-        }
-      } catch (err) {
-        setMessage({
-          type: "error",
-          text: err.message || "Failed to load content.",
-        });
-      } finally {
-        setLoading(false);
-      }
+    if (isError) {
+      setMessage({
+        type: "error",
+        text: "Failed to load content.",
+      });
+      return;
     }
 
-    loadContent();
-  }, []);
+    const dropdown = data?.content?.productDropdown;
+
+    if (dropdown) {
+      setColumn1({
+        heading: dropdown.column1?.heading || "",
+        items: dropdown.column1?.items || [],
+      });
+
+      setColumn2({
+        heading: dropdown.column2?.heading || "",
+        items: dropdown.column2?.items || [],
+      });
+    }
+  }, [data, isError]);
 
   const getColumnState = (col) => (col === 1 ? column1 : column2);
 
@@ -89,25 +84,13 @@ export default function EditNavbarDropdown() {
     setMessage(null);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
+      const uploadData = await uploadFile(file).unwrap();
 
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Upload failed.");
-      }
-
-      handleItemChange(col, index, "logo", data.url);
+      handleItemChange(col, index, "logo", uploadData.url);
     } catch (err) {
       setMessage({
         type: "error",
-        text: err.message || "Upload failed.",
+        text: err.data?.error || err.message || "Upload failed.",
       });
     } finally {
       setUploadingKey(null);
@@ -139,24 +122,12 @@ export default function EditNavbarDropdown() {
     setMessage(null);
 
     try {
-      const res = await fetch("/api/navbar", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+      await updateNavbarContent({
+        productDropdown: {
+          column1,
+          column2,
         },
-        body: JSON.stringify({
-          productDropdown: {
-            column1,
-            column2,
-          },
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Save failed.");
-      }
+      }).unwrap();
 
       setMessage({
         type: "success",
@@ -165,7 +136,7 @@ export default function EditNavbarDropdown() {
     } catch (err) {
       setMessage({
         type: "error",
-        text: err.message || "Save failed.",
+        text: err.data?.error || err.message || "Save failed.",
       });
     } finally {
       setSaving(false);
@@ -175,7 +146,7 @@ export default function EditNavbarDropdown() {
   const inputClasses =
     "w-full text-sm border border-dashed border-brand-border rounded-lg px-4 py-3 outline-none focus:border-brand-green focus:shadow-lg transition-all bg-white";
 
-  if (loading) {
+  if (isLoading) {
     return (
       <section className="flex min-h-[60vh] items-center justify-center">
         <Loader2

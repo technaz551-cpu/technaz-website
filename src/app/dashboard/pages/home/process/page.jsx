@@ -2,34 +2,32 @@
 
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import {
+  useGetHomeContentQuery,
+  useUpdateHomeContentMutation,
+} from "@/store/api/technazApi";
 
 const EMPTY_PROCESS = { subheading: "", steps: [] };
 
 export default function EditProcessSection() {
   const [process, setProcess] = useState(EMPTY_PROCESS);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState(null);
+  const { data, isLoading, isError } = useGetHomeContentQuery();
+  const [updateHomeContent] = useUpdateHomeContentMutation();
 
   useEffect(() => {
-    async function loadContent() {
-      try {
-        const res = await fetch("/api/content/home");
-        const data = await res.json();
-        if (data.content?.process) {
-          setProcess({
-            subheading: data.content.process.subheading || "",
-            steps: data.content.process.steps || [],
-          });
-        }
-      } catch (err) {
-        setMessage({ type: "error", text: "Failed to load content." });
-      } finally {
-        setLoading(false);
-      }
+    if (isError) {
+      setMessage({ type: "error", text: "Failed to load content." });
+      return;
     }
-    loadContent();
-  }, []);
+    if (data?.content?.process) {
+      setProcess({
+        subheading: data.content.process.subheading || "",
+        steps: data.content.process.steps || [],
+      });
+    }
+  }, [data, isError]);
 
   const handleSubheadingChange = (value) => {
     setProcess((prev) => ({ ...prev, subheading: value }));
@@ -53,19 +51,14 @@ export default function EditProcessSection() {
     setMessage(null);
 
     try {
-      const res = await fetch("/api/content/home", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ process }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error || "Save failed.");
+      await updateHomeContent({ process }).unwrap();
 
       setMessage({ type: "success", text: "Process section updated successfully." });
     } catch (err) {
-      setMessage({ type: "error", text: err.message });
+      setMessage({
+        type: "error",
+        text: err.data?.error || err.message || "Save failed.",
+      });
     } finally {
       setSaving(false);
     }
@@ -74,7 +67,7 @@ export default function EditProcessSection() {
   const inputClasses =
     "w-full text-sm border border-dashed border-brand-border rounded-lg px-4 py-3 outline-none focus:border-brand-green focus:shadow-lg transition-all bg-white";
 
-  if (loading) {
+  if (isLoading) {
     return (
       <section className="flex min-h-[60vh] items-center justify-center">
         <Loader2 className="animate-spin text-brand-green" size={28} />

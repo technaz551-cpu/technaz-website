@@ -1,9 +1,13 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
-import { SITE } from "@/lib/site";
+import StoreProvider from "@/components/providers/StoreProvider";
+import SeoScripts from "@/components/seo/SeoScripts";
+import { getSeoSettings, buildRootMetadata } from "@/lib/getSeoSettings";
 import dbConnect from "@/lib/dbConnect";
 import NavbarContent from "@/models/NavbarContent";
+import ProductsContent from "@/models/ProductsContent";
+import { getContactContent } from "@/lib/getContactContent";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,43 +20,24 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata = {
-  metadataBase: new URL(SITE.url),
-  title: {
-    default: SITE.title,
-    template: `%s | ${SITE.name}`,
-  },
-  description: SITE.description,
-  keywords: SITE.keywords,
-  authors: [{ name: SITE.name, url: SITE.url }],
-  creator: SITE.name,
-  robots: {
-    index: true,
-    follow: true,
-  },
-  openGraph: {
-    type: "website",
-    locale: SITE.locale,
-    url: SITE.url,
-    siteName: SITE.name,
-    title: SITE.title,
-    description: SITE.description,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: SITE.title,
-    description: SITE.description,
-  },
-  alternates: {
-    canonical: SITE.url,
-  },
-};
+export async function generateMetadata() {
+  const seo = await getSeoSettings();
+  return buildRootMetadata(seo);
+}
 
 export default async function RootLayout({ children }) {
   await dbConnect();
-  const navbarContent = JSON.parse(
-    JSON.stringify(await NavbarContent.findOne({}).lean())
-  );
+  const [navbarDoc, seo, contactContent] = await Promise.all([
+    NavbarContent.findOne({}).lean(),
+    getSeoSettings(),
+    getContactContent(),
+  ]);
+  let productsDoc = await ProductsContent.findOne({}).lean();
+  if (!productsDoc) {
+    productsDoc = (await ProductsContent.create({})).toObject();
+  }
+  const navbarContent = JSON.parse(JSON.stringify(navbarDoc));
+  const productsContent = JSON.parse(JSON.stringify(productsDoc));
 
   return (
     <html
@@ -64,9 +49,12 @@ export default async function RootLayout({ children }) {
         className="min-h-full flex flex-col font-sans"
         suppressHydrationWarning
       >
-        <Navbar content={navbarContent} />
-        {children}
-        <Footer />
+        <SeoScripts seo={seo} />
+        <StoreProvider>
+          <Navbar content={navbarContent} productsContent={productsContent} />
+          {children}
+          <Footer contactContent={contactContent} />
+        </StoreProvider>
       </body>
     </html>
   );

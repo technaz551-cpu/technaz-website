@@ -5,12 +5,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { buildProductDropdownFromContent } from "@/lib/productNav";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Services", href: "/services" },
   { label: "Product" },
+  { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -58,7 +60,36 @@ const DEFAULT_PRODUCT_DROPDOWN = {
   },
 };
 
-export default function Navbar({ content }) {
+function isExternalProductLink(item) {
+  return (
+    item?.external === true ||
+    (typeof item?.href === "string" && /^https?:\/\//i.test(item.href))
+  );
+}
+
+function ProductDropdownLink({ item, className, children, onNavigate }) {
+  if (isExternalProductLink(item)) {
+    return (
+      <a
+        href={item.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={onNavigate}
+        className={className}
+      >
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={item.href} onClick={onNavigate} className={className}>
+      {children}
+    </Link>
+  );
+}
+
+export default function Navbar({ content, productsContent }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isProductOpen, setIsProductOpen] = useState(false);
 
@@ -69,11 +100,15 @@ export default function Navbar({ content }) {
     return null;
   }
 
-  const PRODUCT_DROPDOWN =
+  const fromProducts = buildProductDropdownFromContent(productsContent);
+  const legacyDropdown =
     content?.productDropdown &&
     content.productDropdown.column1?.items?.length > 0
       ? content.productDropdown
       : DEFAULT_PRODUCT_DROPDOWN;
+
+  const PRODUCT_DROPDOWN = fromProducts || legacyDropdown;
+  const productViewAllHref = fromProducts?.viewAllHref || "/products";
 
   return (
     <header className="relative w-full border-b border-gray-100 bg-white">
@@ -96,7 +131,7 @@ export default function Navbar({ content }) {
             const isProduct = link.label === "Product";
 
             const isActive = isProduct
-              ? pathname.startsWith("/product")
+              ? pathname.startsWith("/products")
               : link.href === "/"
                 ? pathname === "/"
                 : pathname === link.href ||
@@ -158,14 +193,10 @@ export default function Navbar({ content }) {
                             <div className="mt-4 flex flex-col gap-2">
                               {PRODUCT_DROPDOWN.column1.items.map(
                                 (item, index) => (
-                                  <a
+                                  <ProductDropdownLink
                                     key={`${item.label}-${index}`}
-                                    href={item.href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={() =>
-                                      setIsProductOpen(false)
-                                    }
+                                    item={item}
+                                    onNavigate={() => setIsProductOpen(false)}
                                     className="group flex items-center gap-4 rounded-xl p-3 transition-colors hover:bg-gray-50"
                                   >
                                     <div className="flex h-12 w-12 shrink-0 items-center justify-center">
@@ -183,7 +214,7 @@ export default function Navbar({ content }) {
                                         {item.label}
                                       </p>
                                     </div>
-                                  </a>
+                                  </ProductDropdownLink>
                                 )
                               )}
                             </div>
@@ -198,14 +229,10 @@ export default function Navbar({ content }) {
                             <div className="mt-4 flex flex-col gap-2">
                               {PRODUCT_DROPDOWN.column2.items.map(
                                 (item, index) => (
-                                  <a
+                                  <ProductDropdownLink
                                     key={`${item.label}-${index}`}
-                                    href={item.href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={() =>
-                                      setIsProductOpen(false)
-                                    }
+                                    item={item}
+                                    onNavigate={() => setIsProductOpen(false)}
                                     className="group flex items-center gap-4 rounded-xl p-3 transition-colors hover:bg-gray-50"
                                   >
                                     <div className="flex h-12 w-12 shrink-0 items-center justify-center">
@@ -223,11 +250,21 @@ export default function Navbar({ content }) {
                                         {item.label}
                                       </p>
                                     </div>
-                                  </a>
+                                  </ProductDropdownLink>
                                 )
                               )}
                             </div>
                           </div>
+                        </div>
+
+                        <div className="mt-6 border-t border-gray-100 pt-4 text-center">
+                          <Link
+                            href={productViewAllHref}
+                            onClick={() => setIsProductOpen(false)}
+                            className="text-xs font-semibold text-brand-green transition-colors hover:text-brand-green-dark"
+                          >
+                            View all products
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -290,7 +327,7 @@ export default function Navbar({ content }) {
               const isProduct = link.label === "Product";
 
               const isActive = isProduct
-                ? pathname.startsWith("/product")
+                ? pathname.startsWith("/products")
                 : link.href === "/"
                   ? pathname === "/"
                   : pathname === link.href ||
@@ -327,12 +364,10 @@ export default function Navbar({ content }) {
                           ...PRODUCT_DROPDOWN.column1.items,
                           ...PRODUCT_DROPDOWN.column2.items,
                         ].map((item, index) => (
-                          <a
+                          <ProductDropdownLink
                             key={`${item.label}-${index}`}
-                            href={item.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => {
+                            item={item}
+                            onNavigate={() => {
                               setIsOpen(false);
                               setIsProductOpen(false);
                             }}
@@ -351,8 +386,19 @@ export default function Navbar({ content }) {
                             <p className="text-xs font-semibold text-brand-dark transition-colors group-hover:text-brand-green">
                               {item.label}
                             </p>
-                          </a>
+                          </ProductDropdownLink>
                         ))}
+
+                        <Link
+                          href={productViewAllHref}
+                          onClick={() => {
+                            setIsOpen(false);
+                            setIsProductOpen(false);
+                          }}
+                          className="mt-2 pl-3 text-xs font-semibold text-brand-green"
+                        >
+                          View all products
+                        </Link>
                       </div>
                     )}
                   </li>

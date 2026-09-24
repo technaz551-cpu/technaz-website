@@ -10,6 +10,11 @@ import {
   Plus,
   RotateCcw,
 } from "lucide-react";
+import {
+  useGetServicesContentQuery,
+  useUpdateServicesContentMutation,
+  useUploadFileMutation,
+} from "@/store/api/technazApi";
 
 const DEFAULT_FEATURES = [
   {
@@ -112,35 +117,25 @@ function slugify(text) {
 
 export default function EditServiceFeatures() {
   const [features, setFeatures] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingIndex, setUploadingIndex] = useState(null);
   const [message, setMessage] = useState(null);
+  const { data, isLoading, isError } = useGetServicesContentQuery();
+  const [updateServicesContent] = useUpdateServicesContentMutation();
+  const [uploadFile] = useUploadFileMutation();
 
-  // Load services from the API
   useEffect(() => {
-    async function loadContent() {
-      try {
-        const res = await fetch("/api/content/services");
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || "Failed to load content.");
-        }
-
-        setFeatures(data.content?.features || []);
-      } catch (err) {
-        setMessage({
-          type: "error",
-          text: err.message || "Failed to load content.",
-        });
-      } finally {
-        setLoading(false);
-      }
+    if (isError) {
+      setMessage({
+        type: "error",
+        text: "Failed to load content.",
+      });
+      return;
     }
-
-    loadContent();
-  }, []);
+    if (data?.content) {
+      setFeatures(data.content.features || []);
+    }
+  }, [data, isError]);
 
   // Update a field
   const handleFieldChange = (index, field, value) => {
@@ -194,19 +189,7 @@ export default function EditServiceFeatures() {
     setMessage(null);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Upload failed.");
-      }
+      const uploadData = await uploadFile(file).unwrap();
 
       setFeatures((prev) =>
         prev.map((feature, i) =>
@@ -215,7 +198,7 @@ export default function EditServiceFeatures() {
                 ...feature,
                 image: {
                   ...feature.image,
-                  url: data.url,
+                  url: uploadData.url,
                 },
               }
             : feature
@@ -224,7 +207,7 @@ export default function EditServiceFeatures() {
     } catch (err) {
       setMessage({
         type: "error",
-        text: err.message || "Image upload failed.",
+        text: err.data?.error || err.message || "Image upload failed.",
       });
     } finally {
       setUploadingIndex(null);
@@ -269,19 +252,7 @@ export default function EditServiceFeatures() {
     setMessage(null);
 
     try {
-      const res = await fetch("/api/content/services", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ features }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Save failed.");
-      }
+      await updateServicesContent({ features }).unwrap();
 
       setMessage({
         type: "success",
@@ -290,14 +261,14 @@ export default function EditServiceFeatures() {
     } catch (err) {
       setMessage({
         type: "error",
-        text: err.message || "Save failed.",
+        text: err.data?.error || err.message || "Save failed.",
       });
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <section className="flex min-h-[60vh] items-center justify-center">
         <Loader2

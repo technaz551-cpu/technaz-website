@@ -184,3 +184,99 @@ body {
     transform: none;
   }
 }
+
+/* Product detail rich text */
+.product-prose {
+  color: var(--color-brand-dark);
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.product-prose > * + * {
+  margin-top: 1.25rem;
+}
+
+.product-prose h2 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--color-brand-dark);
+  margin-top: 2rem;
+}
+
+.product-prose h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--color-brand-dark);
+  margin-top: 1.5rem;
+}
+
+.product-prose p {
+  color: color-mix(in srgb, var(--color-brand-dark) 85%, transparent);
+}
+
+.product-prose ul,
+.product-prose ol {
+  padding-left: 1.25rem;
+}
+
+.product-prose ul {
+  list-style-type: disc;
+}
+
+.product-prose ol {
+  list-style-type: decimal;
+}
+
+.product-prose li + li {
+  margin-top: 0.5rem;
+}
+
+.product-prose a {
+  color: var(--color-brand-green-dark);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.product-prose a:hover {
+  color: var(--color-brand-green);
+}
+
+.rich-text-editor:empty::before {
+  content: attr(data-placeholder);
+  color: var(--color-brand-gray);
+  pointer-events: none;
+}
+
+.rich-text-editor h2 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0.75rem 0 0.35rem;
+}
+
+.rich-text-editor h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.rich-text-editor ul,
+.rich-text-editor ol {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+}
+
+.rich-text-editor ul {
+  list-style-type: disc;
+}
+
+.rich-text-editor ol {
+  list-style-type: decimal;
+}
+
+.rich-text-editor a {
+  color: var(--color-brand-green-dark);
+  text-decoration: underline;
+}

@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Upload, Loader2, RotateCcw } from "lucide-react";
+import {
+  useGetAboutContentQuery,
+  useUpdateAboutContentMutation,
+  useUploadFileMutation,
+} from "@/store/api/technazApi";
 
 const EMPTY_HERO = {
   title: "",
@@ -17,27 +22,22 @@ const DEFAULT_IMAGE = {
 
 export default function EditAboutHero() {
   const [hero, setHero] = useState(EMPTY_HERO);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState(null);
+  const { data, isLoading, isError } = useGetAboutContentQuery();
+  const [updateAboutContent] = useUpdateAboutContentMutation();
+  const [uploadFile] = useUploadFileMutation();
 
   useEffect(() => {
-    async function loadContent() {
-      try {
-        const res = await fetch("/api/content/about");
-        const data = await res.json();
-        if (data.content?.hero) {
-          setHero(data.content.hero);
-        }
-      } catch (err) {
-        setMessage({ type: "error", text: "Failed to load content." });
-      } finally {
-        setLoading(false);
-      }
+    if (isError) {
+      setMessage({ type: "error", text: "Failed to load content." });
+      return;
     }
-    loadContent();
-  }, []);
+    if (data?.content?.hero) {
+      setHero(data.content.hero);
+    }
+  }, [data, isError]);
 
   const handleTextChange = (field, value) => {
     setHero((prev) => ({ ...prev, [field]: value }));
@@ -53,24 +53,17 @@ export default function EditAboutHero() {
     setMessage(null);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error || "Upload failed.");
+      const uploadData = await uploadFile(file).unwrap();
 
       setHero((prev) => ({
         ...prev,
-        image: { url: data.url, alt: prev.image?.alt || "" },
+        image: { url: uploadData.url, alt: prev.image?.alt || "" },
       }));
     } catch (err) {
-      setMessage({ type: "error", text: err.message });
+      setMessage({
+        type: "error",
+        text: err.data?.error || err.message || "Upload failed.",
+      });
     } finally {
       setUploading(false);
     }
@@ -85,19 +78,14 @@ export default function EditAboutHero() {
     setMessage(null);
 
     try {
-      const res = await fetch("/api/content/about", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ hero }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error || "Save failed.");
+      await updateAboutContent({ hero }).unwrap();
 
       setMessage({ type: "success", text: "About hero updated successfully." });
     } catch (err) {
-      setMessage({ type: "error", text: err.message });
+      setMessage({
+        type: "error",
+        text: err.data?.error || err.message || "Save failed.",
+      });
     } finally {
       setSaving(false);
     }
@@ -106,7 +94,7 @@ export default function EditAboutHero() {
   const inputClasses =
     "w-full text-sm border border-dashed border-brand-border rounded-lg px-4 py-3 outline-none focus:border-brand-green focus:shadow-lg transition-all bg-white";
 
-  if (loading) {
+  if (isLoading) {
     return (
       <section className="flex min-h-[60vh] items-center justify-center">
         <Loader2 className="animate-spin text-brand-green" size={28} />

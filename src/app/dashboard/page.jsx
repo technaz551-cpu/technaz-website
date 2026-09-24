@@ -43,6 +43,33 @@ const mainSections = [
     icon: BriefcaseBusiness,
   },
   {
+    title: "Products",
+    description:
+      "Manage product listings, detail pages, and navbar product menu items.",
+    href: "/dashboard/pages/products",
+    icon: Layers3,
+  },
+  {
+    title: "Blog",
+    description: "Create, edit, and publish blog articles for the public site.",
+    href: "/dashboard/pages/blog",
+    icon: FileText,
+  },
+  {
+    title: "Contact",
+    description:
+      "Emails, multi-office addresses, opening hours, and social links.",
+    href: "/dashboard/pages/contact",
+    icon: FileText,
+  },
+  {
+    title: "SEO",
+    description:
+      "Site meta tags, Google Analytics, Search Console, robots.txt, and sitemap.",
+    href: "/dashboard/pages/seo",
+    icon: Settings,
+  },
+  {
     title: "Navbar",
     description:
       "Manage navigation links and Product dropdown partner information.",

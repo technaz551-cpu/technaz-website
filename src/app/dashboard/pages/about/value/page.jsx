@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Upload, Loader2, RotateCcw } from "lucide-react";
+import {
+  useGetAboutContentQuery,
+  useUpdateAboutContentMutation,
+  useUploadFileMutation,
+} from "@/store/api/technazApi";
  
 const EMPTY_VALUE = {
   eyebrow: "",
@@ -19,27 +24,22 @@ const DEFAULT_IMAGE = {
  
 export default function EditAboutValue() {
   const [value, setValue] = useState(EMPTY_VALUE);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState(null);
- 
+  const { data, isLoading, isError } = useGetAboutContentQuery();
+  const [updateAboutContent] = useUpdateAboutContentMutation();
+  const [uploadFile] = useUploadFileMutation();
+
   useEffect(() => {
-    async function loadContent() {
-      try {
-        const res = await fetch("/api/content/about");
-        const data = await res.json();
-        if (data.content?.value) {
-          setValue({ ...EMPTY_VALUE, ...data.content.value });
-        }
-      } catch (err) {
-        setMessage({ type: "error", text: "Failed to load content." });
-      } finally {
-        setLoading(false);
-      }
+    if (isError) {
+      setMessage({ type: "error", text: "Failed to load content." });
+      return;
     }
-    loadContent();
-  }, []);
+    if (data?.content?.value) {
+      setValue({ ...EMPTY_VALUE, ...data.content.value });
+    }
+  }, [data, isError]);
  
   const handleTextChange = (field, val) => {
     setValue((prev) => ({ ...prev, [field]: val }));
@@ -55,24 +55,17 @@ export default function EditAboutValue() {
     setMessage(null);
  
     try {
-      const formData = new FormData();
-      formData.append("file", file);
- 
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
- 
-      const data = await res.json();
- 
-      if (!res.ok) throw new Error(data.error || "Upload failed.");
- 
+      const uploadData = await uploadFile(file).unwrap();
+
       setValue((prev) => ({
         ...prev,
-        image: { url: data.url, alt: prev.image?.alt || "" },
+        image: { url: uploadData.url, alt: prev.image?.alt || "" },
       }));
     } catch (err) {
-      setMessage({ type: "error", text: err.message });
+      setMessage({
+        type: "error",
+        text: err.data?.error || err.message || "Upload failed.",
+      });
     } finally {
       setUploading(false);
     }
@@ -87,19 +80,14 @@ export default function EditAboutValue() {
     setMessage(null);
  
     try {
-      const res = await fetch("/api/content/about", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ value }),
-      });
- 
-      const data = await res.json();
- 
-      if (!res.ok) throw new Error(data.error || "Save failed.");
- 
+      await updateAboutContent({ value }).unwrap();
+
       setMessage({ type: "success", text: "Value section updated successfully." });
     } catch (err) {
-      setMessage({ type: "error", text: err.message });
+      setMessage({
+        type: "error",
+        text: err.data?.error || err.message || "Save failed.",
+      });
     } finally {
       setSaving(false);
     }
@@ -108,7 +96,7 @@ export default function EditAboutValue() {
   const inputClasses =
     "w-full text-sm border border-dashed border-brand-border rounded-lg px-4 py-3 outline-none focus:border-brand-green focus:shadow-lg transition-all bg-white";
  
-  if (loading) {
+  if (isLoading) {
     return (
       <section className="flex min-h-[60vh] items-center justify-center">
         <Loader2 className="animate-spin text-brand-green" size={28} />

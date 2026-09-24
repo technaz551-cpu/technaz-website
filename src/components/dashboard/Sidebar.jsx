@@ -51,7 +51,19 @@ const NAV_ITEMS = [
       { label: "Service Cards", href: "/dashboard/pages/services/features" },
     ],
   },
+  {
+    label: "Products",
+    icon: Home,
+    basePath: "/dashboard/pages/products",
+    children: [
+      { label: "Hero Section", href: "/dashboard/pages/products" },
+      { label: "Product List", href: "/dashboard/pages/products/list" },
+    ],
+  },
   { label: "Navbar Menu", href: "/dashboard/pages/navbar", icon: Home },
+  { label: "Blog", href: "/dashboard/pages/blog", icon: Home },
+  { label: "Contact", href: "/dashboard/pages/contact", icon: Home },
+  { label: "SEO", href: "/dashboard/pages/seo", icon: Settings },
   { label: "Team", href: "/dashboard/team", icon: Users },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
@@ -68,7 +80,7 @@ export default function Sidebar() {
   }, [pathname]);
 
   return (
-    <aside className="flex h-screen w-64 flex-shrink-0 flex-col border-r border-gray-100 bg-white">
+    <aside className="flex h-full w-64 flex-shrink-0 flex-col overflow-hidden border-r border-gray-100 bg-white">
       <div className="flex h-20 items-center border-b border-gray-100 px-6">
         <Image
           src="/images/footer/technaz-large-logo.png"
@@ -80,7 +92,7 @@ export default function Sidebar() {
         />
       </div>
 
-      <nav className="flex-1 space-y-1 px-4 py-6">
+      <nav className="flex-1 space-y-1 overflow-y-auto px-4 py-6">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
 

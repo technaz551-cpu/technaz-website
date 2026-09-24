@@ -2,35 +2,33 @@
 
 import { useEffect, useState } from "react";
 import { Loader2, Trash2, Plus } from "lucide-react";
+import {
+  useGetHomeContentQuery,
+  useUpdateHomeContentMutation,
+} from "@/store/api/technazApi";
 
 const EMPTY_FAQ = { heading: "", items: [] };
 const EMPTY_ITEM = { question: "", answer: "" };
 
 export default function EditFAQSection() {
   const [faq, setFaq] = useState(EMPTY_FAQ);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState(null);
+  const { data, isLoading, isError } = useGetHomeContentQuery();
+  const [updateHomeContent] = useUpdateHomeContentMutation();
 
   useEffect(() => {
-    async function loadContent() {
-      try {
-        const res = await fetch("/api/content/home");
-        const data = await res.json();
-        if (data.content?.faq) {
-          setFaq({
-            heading: data.content.faq.heading || "",
-            items: data.content.faq.items || [],
-          });
-        }
-      } catch (err) {
-        setMessage({ type: "error", text: "Failed to load content." });
-      } finally {
-        setLoading(false);
-      }
+    if (isError) {
+      setMessage({ type: "error", text: "Failed to load content." });
+      return;
     }
-    loadContent();
-  }, []);
+    if (data?.content?.faq) {
+      setFaq({
+        heading: data.content.faq.heading || "",
+        items: data.content.faq.items || [],
+      });
+    }
+  }, [data, isError]);
 
   const handleHeadingChange = (value) => {
     setFaq((prev) => ({ ...prev, heading: value }));
@@ -64,19 +62,14 @@ export default function EditFAQSection() {
     setMessage(null);
 
     try {
-      const res = await fetch("/api/content/home", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ faq }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error || "Save failed.");
+      await updateHomeContent({ faq }).unwrap();
 
       setMessage({ type: "success", text: "FAQ section updated successfully." });
     } catch (err) {
-      setMessage({ type: "error", text: err.message });
+      setMessage({
+        type: "error",
+        text: err.data?.error || err.message || "Save failed.",
+      });
     } finally {
       setSaving(false);
     }
@@ -85,7 +78,7 @@ export default function EditFAQSection() {
   const inputClasses =
     "w-full text-sm border border-dashed border-brand-border rounded-lg px-4 py-3 outline-none focus:border-brand-green focus:shadow-lg transition-all bg-white";
 
-  if (loading) {
+  if (isLoading) {
     return (
       <section className="flex min-h-[60vh] items-center justify-center">
         <Loader2 className="animate-spin text-brand-green" size={28} />

@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Upload, Loader2, Trash2, Plus, RotateCcw } from "lucide-react";
+import {
+  useGetHomeContentQuery,
+  useUpdateHomeContentMutation,
+  useUploadFileMutation,
+} from "@/store/api/technazApi";
 
 const DEFAULT_LOGOS = [
   { url: "/images/partnerships/partner-1.png", alt: "1st Choice Rideshare Club partner" },
@@ -16,31 +21,26 @@ const EMPTY_LOGO = { url: "", alt: "" };
 
 export default function EditPartnershipsSection() {
   const [partnerships, setPartnerships] = useState(EMPTY_PARTNERSHIPS);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingIndex, setUploadingIndex] = useState(null);
   const [message, setMessage] = useState(null);
+  const { data, isLoading, isError } = useGetHomeContentQuery();
+  const [updateHomeContent] = useUpdateHomeContentMutation();
+  const [uploadFile] = useUploadFileMutation();
 
   useEffect(() => {
-    async function loadContent() {
-      try {
-        const res = await fetch("/api/content/home");
-        const data = await res.json();
-        if (data.content?.partnerships) {
-          setPartnerships({
-            ...EMPTY_PARTNERSHIPS,
-            ...data.content.partnerships,
-            logos: data.content.partnerships.logos || [],
-          });
-        }
-      } catch (err) {
-        setMessage({ type: "error", text: "Failed to load content." });
-      } finally {
-        setLoading(false);
-      }
+    if (isError) {
+      setMessage({ type: "error", text: "Failed to load content." });
+      return;
     }
-    loadContent();
-  }, []);
+    if (data?.content?.partnerships) {
+      setPartnerships({
+        ...EMPTY_PARTNERSHIPS,
+        ...data.content.partnerships,
+        logos: data.content.partnerships.logos || [],
+      });
+    }
+  }, [data, isError]);
 
   const handleTextChange = (field, value) => {
     setPartnerships((prev) => ({ ...prev, [field]: value }));
@@ -60,25 +60,18 @@ export default function EditPartnershipsSection() {
     setMessage(null);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error || "Upload failed.");
+      const uploadData = await uploadFile(file).unwrap();
 
       setPartnerships((prev) => {
         const logos = [...prev.logos];
-        logos[index] = { url: data.url, alt: logos[index]?.alt || "" };
+        logos[index] = { url: uploadData.url, alt: logos[index]?.alt || "" };
         return { ...prev, logos };
       });
     } catch (err) {
-      setMessage({ type: "error", text: err.message });
+      setMessage({
+        type: "error",
+        text: err.data?.error || err.message || "Upload failed.",
+      });
     } finally {
       setUploadingIndex(null);
     }
@@ -112,22 +105,17 @@ export default function EditPartnershipsSection() {
     setMessage(null);
 
     try {
-      const res = await fetch("/api/content/home", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ partnerships }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error || "Save failed.");
+      await updateHomeContent({ partnerships }).unwrap();
 
       setMessage({
         type: "success",
         text: "Partnerships section updated successfully.",
       });
     } catch (err) {
-      setMessage({ type: "error", text: err.message });
+      setMessage({
+        type: "error",
+        text: err.data?.error || err.message || "Save failed.",
+      });
     } finally {
       setSaving(false);
     }
@@ -136,7 +124,7 @@ export default function EditPartnershipsSection() {
   const inputClasses =
     "w-full text-sm border border-dashed border-brand-border rounded-lg px-4 py-3 outline-none focus:border-brand-green focus:shadow-lg transition-all bg-white";
 
-  if (loading) {
+  if (isLoading) {
     return (
       <section className="flex min-h-[60vh] items-center justify-center">
         <Loader2 className="animate-spin text-brand-green" size={28} />

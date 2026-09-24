@@ -4,11 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
+import { useLoginMutation } from "@/store/api/technazApi";
 
 export default function LoginPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const [status, setStatus] = useState({ loading: false, error: null });
+  const [showPassword, setShowPassword] = useState(false);
+  const [login, { isLoading, error }] = useLoginMutation();
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -16,30 +19,21 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setStatus({ loading: true, error: null });
 
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Invalid email or password.");
-      }
-
+      await login(formData).unwrap();
       router.push("/dashboard");
       router.refresh();
-    } catch (err) {
-      setStatus({ loading: false, error: err.message });
+    } catch {
+      // Error surfaced via RTK Query `error` state
     }
   };
 
   const inputClasses =
     "w-full text-sm border border-dashed border-brand-border rounded-lg px-4 py-3 outline-none focus:border-brand-green focus:shadow-lg transition-all bg-white";
+
+  const errorMessage =
+    error?.data?.error || error?.error || (error ? "Invalid email or password." : null);
 
   return (
     <main className="bg-grid-green flex min-h-screen items-center justify-center px-6 py-12">
@@ -91,30 +85,44 @@ export default function LoginPage() {
             >
               Password
             </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              className={inputClasses}
-              autoComplete="current-password"
-              required
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+                className={`${inputClasses} pr-11`}
+                autoComplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-gray transition-colors hover:text-brand-dark"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <EyeOff size={18} aria-hidden="true" />
+                ) : (
+                  <Eye size={18} aria-hidden="true" />
+                )}
+              </button>
+            </div>
           </div>
 
           <button
             type="submit"
-            disabled={status.loading}
+            disabled={isLoading}
             className="mt-2 inline-flex items-center justify-center rounded-full bg-brand-green px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-green-dark disabled:opacity-60"
           >
-            {status.loading ? "Signing in..." : "Sign In"}
+            {isLoading ? "Signing in..." : "Sign In"}
           </button>
 
-          {status.error && (
+          {errorMessage && (
             <p className="text-center text-sm font-medium text-red-600">
-              {status.error}
+              {errorMessage}
             </p>
           )}
         </form>

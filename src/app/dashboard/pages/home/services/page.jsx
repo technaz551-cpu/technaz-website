@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Upload, Loader2, Trash2, Plus, RotateCcw } from "lucide-react";
+import {
+  useGetHomeContentQuery,
+  useUpdateHomeContentMutation,
+  useUploadFileMutation,
+} from "@/store/api/technazApi";
 
 const DEFAULT_SERVICES = [
   {
@@ -54,31 +59,26 @@ const EMPTY_ITEM = {
 
 export default function EditServicesSection() {
   const [services, setServices] = useState(EMPTY_SERVICES);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingIndex, setUploadingIndex] = useState(null);
   const [message, setMessage] = useState(null);
+  const { data, isLoading, isError } = useGetHomeContentQuery();
+  const [updateHomeContent] = useUpdateHomeContentMutation();
+  const [uploadFile] = useUploadFileMutation();
 
   useEffect(() => {
-    async function loadContent() {
-      try {
-        const res = await fetch("/api/content/home");
-        const data = await res.json();
-        if (data.content?.services) {
-          setServices({
-            ...EMPTY_SERVICES,
-            ...data.content.services,
-            items: data.content.services.items || [],
-          });
-        }
-      } catch (err) {
-        setMessage({ type: "error", text: "Failed to load content." });
-      } finally {
-        setLoading(false);
-      }
+    if (isError) {
+      setMessage({ type: "error", text: "Failed to load content." });
+      return;
     }
-    loadContent();
-  }, []);
+    if (data?.content?.services) {
+      setServices({
+        ...EMPTY_SERVICES,
+        ...data.content.services,
+        items: data.content.services.items || [],
+      });
+    }
+  }, [data, isError]);
 
   const handleTextChange = (field, value) => {
     setServices((prev) => ({ ...prev, [field]: value }));
@@ -98,28 +98,21 @@ export default function EditServicesSection() {
     setMessage(null);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error || "Upload failed.");
+      const uploadData = await uploadFile(file).unwrap();
 
       setServices((prev) => {
         const items = [...prev.items];
         items[index] = {
           ...items[index],
-          image: { url: data.url, alt: items[index]?.image?.alt || "" },
+          image: { url: uploadData.url, alt: items[index]?.image?.alt || "" },
         };
         return { ...prev, items };
       });
     } catch (err) {
-      setMessage({ type: "error", text: err.message });
+      setMessage({
+        type: "error",
+        text: err.data?.error || err.message || "Upload failed.",
+      });
     } finally {
       setUploadingIndex(null);
     }
@@ -154,19 +147,14 @@ export default function EditServicesSection() {
     setMessage(null);
 
     try {
-      const res = await fetch("/api/content/home", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ services }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error || "Save failed.");
+      await updateHomeContent({ services }).unwrap();
 
       setMessage({ type: "success", text: "Services section updated successfully." });
     } catch (err) {
-      setMessage({ type: "error", text: err.message });
+      setMessage({
+        type: "error",
+        text: err.data?.error || err.message || "Save failed.",
+      });
     } finally {
       setSaving(false);
     }
@@ -175,7 +163,7 @@ export default function EditServicesSection() {
   const inputClasses =
     "w-full text-sm border border-dashed border-brand-border rounded-lg px-4 py-3 outline-none focus:border-brand-green focus:shadow-lg transition-all bg-white";
 
-  if (loading) {
+  if (isLoading) {
     return (
       <section className="flex min-h-[60vh] items-center justify-center">
         <Loader2 className="animate-spin text-brand-green" size={28} />
