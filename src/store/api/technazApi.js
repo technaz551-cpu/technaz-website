@@ -16,6 +16,7 @@ export const technazApi = createApi({
     "Seo",
     "Blog",
     "Contact",
+    "ContactQueries",
   ],
   endpoints: (builder) => ({
     login: builder.mutation({
@@ -124,6 +125,26 @@ export const technazApi = createApi({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["ContactQueries"],
+    }),
+    getContactQueries: builder.query({
+      query: () => "/contact/queries",
+      providesTags: ["ContactQueries"],
+    }),
+    updateContactQuery: builder.mutation({
+      query: ({ id, read }) => ({
+        url: `/contact/queries/${id}`,
+        method: "PATCH",
+        body: { read },
+      }),
+      invalidatesTags: ["ContactQueries"],
+    }),
+    deleteContactQuery: builder.mutation({
+      query: (id) => ({
+        url: `/contact/queries/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["ContactQueries"],
     }),
     getSeoSettings: builder.query({
       query: () => "/content/seo",
@@ -208,4 +229,7 @@ export const {
   useDeleteBlogPostMutation,
   useGetContactContentQuery,
   useUpdateContactContentMutation,
+  useGetContactQueriesQuery,
+  useUpdateContactQueryMutation,
+  useDeleteContactQueryMutation,
 } = technazApi;

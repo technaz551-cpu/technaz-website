@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import {
   useGetContactContentQuery,
@@ -117,7 +118,13 @@ export default function EditContactPage() {
         </h1>
         <p className="mt-3 text-sm text-brand-gray">
           Manage emails, office locations (Australia, Pakistan, and more),
-          opening hours, social links, and footer contact details.
+          opening hours, social links, and footer contact details.{" "}
+          <Link
+            href="/dashboard/pages/contact/queries"
+            className="font-semibold text-brand-green hover:underline"
+          >
+            View form enquiries →
+          </Link>
         </p>
       </div>
 

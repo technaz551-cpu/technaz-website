@@ -1,6 +1,45 @@
-
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import dbConnect from "@/lib/dbConnect";
+import ContactSubmission from "@/models/ContactSubmission";
+
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+async function sendNotificationEmail({ name, email, contact, message }) {
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_APP_PASSWORD;
+  const notifyTo = process.env.CONTACT_NOTIFY_EMAIL || user;
+
+  if (!user || !pass) {
+    return;
+  }
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: { user, pass },
+  });
+
+  await transporter.sendMail({
+    from: `"Technaz Website" <${user}>`,
+    to: notifyTo,
+    replyTo: email,
+    subject: `New contact enquiry from ${name}`,
+    html: `
+      <h2>New contact form submission</h2>
+      <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+      <p><strong>Contact number:</strong> ${escapeHtml(contact || "Not provided")}</p>
+      <p><strong>Message:</strong></p>
+      <p>${escapeHtml(message).replace(/\n/g, "<br />")}</p>
+    `,
+  });
+}
 
 export async function POST(request) {
   try {
@@ -14,30 +53,25 @@ export async function POST(request) {
       );
     }
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: 'alizainabiyon313@gmail.com',
-        pass: 'gdas jdxg flpd zkai',
-      },
+    await dbConnect();
+
+    const submission = await ContactSubmission.create({
+      name: name.trim(),
+      email: email.trim(),
+      contact: (contact || "").trim(),
+      message: message.trim(),
     });
 
-    await transporter.sendMail({
-      from: `"Technaz Website" <alizainabiyon313@gmail.com>`,
-      to: 'alizainabiyon313@gmail.com',
-      replyTo: email,
-      subject: `New Contact Form Submission from ${name}`,
-      html: `
-        <h2>New Contact Form Submission</h2>
-
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Contact Number:</strong> ${contact || "Not provided"}</p>
-
-        <p><strong>Message:</strong></p>
-        <p>${message}</p>
-      `,
-    });
+    try {
+      await sendNotificationEmail({
+        name: submission.name,
+        email: submission.email,
+        contact: submission.contact,
+        message: submission.message,
+      });
+    } catch (mailError) {
+      console.error("Contact email notification failed:", mailError);
+    }
 
     return NextResponse.json(
       { success: true, message: "Message sent successfully!" },
@@ -52,4 +86,3 @@ export async function POST(request) {
     );
   }
 }
-

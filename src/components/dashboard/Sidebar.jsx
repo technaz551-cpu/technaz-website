@@ -62,7 +62,15 @@ const NAV_ITEMS = [
   },
   { label: "Navbar Menu", href: "/dashboard/pages/navbar", icon: Home },
   { label: "Blog", href: "/dashboard/pages/blog", icon: Home },
-  { label: "Contact", href: "/dashboard/pages/contact", icon: Home },
+  {
+    label: "Contact",
+    icon: Home,
+    basePath: "/dashboard/pages/contact",
+    children: [
+      { label: "Contact settings", href: "/dashboard/pages/contact" },
+      { label: "Form enquiries", href: "/dashboard/pages/contact/queries" },
+    ],
+  },
   { label: "SEO", href: "/dashboard/pages/seo", icon: Settings },
   { label: "Team", href: "/dashboard/team", icon: Users },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
