@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import dbConnect from "@/lib/dbConnect";
 import ServicesContent from "@/models/ServicesContent";
 import { verifyAuthToken, AUTH_COOKIE_NAME } from "@/lib/auth";
+import { revalidatePublicSite } from "@/lib/revalidatePublicSite";
 
 export async function GET() {
   try {
@@ -56,6 +57,8 @@ export async function PUT(request) {
       }
       await content.save();
     }
+
+    revalidatePublicSite();
 
     return NextResponse.json({ success: true, content }, { status: 200 });
   } catch (error) {

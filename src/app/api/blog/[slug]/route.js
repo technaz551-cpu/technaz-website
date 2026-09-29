@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import dbConnect from "@/lib/dbConnect";
 import BlogPost from "@/models/BlogPost";
 import { verifyAuthToken, AUTH_COOKIE_NAME } from "@/lib/auth";
+import { revalidatePublicSite } from "@/lib/revalidatePublicSite";
 
 export async function GET(_request, { params }) {
   try {
@@ -93,6 +94,8 @@ export async function PUT(request, { params }) {
 
     await post.save();
 
+    revalidatePublicSite([`/blog/${slug}`, `/blog/${post.slug}`]);
+
     return NextResponse.json({ post }, { status: 200 });
   } catch (error) {
     console.error("Update blog post error:", error);
@@ -117,6 +120,8 @@ export async function DELETE(_request, { params }) {
 
     await dbConnect();
     await BlogPost.findOneAndDelete({ slug });
+
+    revalidatePublicSite([`/blog/${slug}`]);
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

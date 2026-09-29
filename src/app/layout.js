@@ -10,6 +10,10 @@ import NavbarContent from "@/models/NavbarContent";
 import ProductsContent from "@/models/ProductsContent";
 import { getContactContent } from "@/lib/getContactContent";
 import "./globals.css";
+import { cmsDynamic } from "@/lib/cmsDynamic";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,6 +31,7 @@ export async function generateMetadata() {
 }
 
 export default async function RootLayout({ children }) {
+  cmsDynamic();
   await dbConnect();
   const [navbarDoc, seo, contactContent] = await Promise.all([
     NavbarContent.findOne({}).lean(),

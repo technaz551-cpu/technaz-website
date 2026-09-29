@@ -1,8 +1,10 @@
 import dbConnect from "@/lib/dbConnect";
 import SeoSettings from "@/models/SeoSettings";
 import { SITE } from "@/lib/site";
+import { cmsDynamic } from "@/lib/cmsDynamic";
 
 export async function getSeoSettings() {
+  cmsDynamic();
   await dbConnect();
   let doc = await SeoSettings.findOne({}).lean();
   if (!doc) {

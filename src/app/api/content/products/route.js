@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import dbConnect from "@/lib/dbConnect";
 import ProductsContent from "@/models/ProductsContent";
 import { verifyAuthToken, AUTH_COOKIE_NAME } from "@/lib/auth";
+import { revalidatePublicSite } from "@/lib/revalidatePublicSite";
 
 export async function GET() {
   try {
@@ -56,6 +57,11 @@ export async function PUT(request) {
       }
       await content.save();
     }
+
+    const productPaths = (content.products || [])
+      .map((p) => p.slug && `/products/${p.slug}`)
+      .filter(Boolean);
+    revalidatePublicSite(productPaths);
 
     return NextResponse.json({ success: true, content }, { status: 200 });
   } catch (error) {

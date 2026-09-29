@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import dbConnect from "@/lib/dbConnect";
 import SeoSettings from "@/models/SeoSettings";
 import { verifyAuthToken, AUTH_COOKIE_NAME } from "@/lib/auth";
+import { revalidatePublicSite } from "@/lib/revalidatePublicSite";
 
 export async function GET() {
   try {
@@ -45,6 +46,8 @@ export async function PUT(request) {
       Object.assign(settings, body);
       await settings.save();
     }
+
+    revalidatePublicSite();
 
     return NextResponse.json({ success: true, settings }, { status: 200 });
   } catch (error) {

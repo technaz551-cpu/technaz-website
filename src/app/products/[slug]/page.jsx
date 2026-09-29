@@ -7,6 +7,8 @@ import ProductDetailHero from "@/components/products/ProductDetailHero";
 import ProductHighlights from "@/components/products/ProductHighlights";
 import MoreProducts from "@/components/products/MoreProducts";
 
+export const dynamic = "force-dynamic";
+
 export async function generateStaticParams() {
   await dbConnect();
   const content = await ProductsContent.findOne({}).lean();

@@ -6,6 +6,8 @@ import { getSeoSettings } from "@/lib/getSeoSettings";
 import { SITE } from "@/lib/site";
 import { stripHtml } from "@/lib/stripHtml";
 
+export const dynamic = "force-dynamic";
+
 export async function generateStaticParams() {
   await dbConnect();
   const posts = await BlogPost.find({ published: true }).lean();

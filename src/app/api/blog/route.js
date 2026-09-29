@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import dbConnect from "@/lib/dbConnect";
 import BlogPost from "@/models/BlogPost";
 import { verifyAuthToken, AUTH_COOKIE_NAME } from "@/lib/auth";
+import { revalidatePublicSite } from "@/lib/revalidatePublicSite";
 
 function slugify(text) {
   return text
@@ -78,6 +79,8 @@ export async function POST(request) {
       slug,
       publishedAt,
     });
+
+    revalidatePublicSite([`/blog/${slug}`]);
 
     return NextResponse.json({ post }, { status: 201 });
   } catch (error) {

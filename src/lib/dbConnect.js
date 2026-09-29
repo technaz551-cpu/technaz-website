@@ -6,7 +6,9 @@ import mongoose from "mongoose";
 // // resolver doesn't properly resolve MongoDB Atlas SRV records).
 // dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
 
-const MONGODB_URI = "mongodb://technaz-website-personal:pM0VmIELyUvk6Zqb@ac-hnqktqb-shard-00-00.0p0ik0z.mongodb.net:27017,ac-hnqktqb-shard-00-01.0p0ik0z.mongodb.net:27017,ac-hnqktqb-shard-00-02.0p0ik0z.mongodb.net:27017/technaz?ssl=true&replicaSet=atlas-ix5z3l-shard-0&authSource=admin&appName=technaz-website-cluster";
+const MONGODB_URI =
+  process.env.MONGODB_URI ||
+  "mongodb://technaz-website-personal:pM0VmIELyUvk6Zqb@ac-hnqktqb-shard-00-00.0p0ik0z.mongodb.net:27017,ac-hnqktqb-shard-00-01.0p0ik0z.mongodb.net:27017,ac-hnqktqb-shard-00-02.0p0ik0z.mongodb.net:27017/technaz?ssl=true&replicaSet=atlas-ix5z3l-shard-0&authSource=admin&appName=technaz-website-cluster";
 
 if (!MONGODB_URI) {
   throw new Error("Please add MONGODB_URI to .env.local");

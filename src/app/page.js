@@ -8,6 +8,7 @@ import Partnerships from "@/components/home/Partnerships";
 import Process from "@/components/home/Process";
 import FAQ from "@/components/home/FAQ";
 import { SITE, organizationJsonLd } from "@/lib/site";
+import { cmsDynamic } from "@/lib/cmsDynamic";
 
 export const metadata = {
   title: SITE.title,
@@ -23,6 +24,7 @@ export const metadata = {
 };
 
 export default async function Home() {
+  cmsDynamic();
   await dbConnect();
   const homeContent = JSON.parse(
     JSON.stringify(await HomeContent.findOne({}).lean())
