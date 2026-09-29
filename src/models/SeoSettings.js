@@ -19,6 +19,8 @@ const SeoSettingsSchema = new mongoose.Schema(
     },
     googleAnalyticsId: { type: String, default: "" },
     googleTagManagerId: { type: String, default: "" },
+    metaPixelId: { type: String, default: "" },
+    metaPixelScript: { type: String, default: "" },
     googleSearchConsoleVerification: { type: String, default: "" },
     bingSiteVerification: { type: String, default: "" },
     robotsIndex: { type: Boolean, default: true },

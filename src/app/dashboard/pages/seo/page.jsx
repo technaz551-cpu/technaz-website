@@ -18,6 +18,8 @@ const EMPTY = {
   twitterCard: "summary_large_image",
   googleAnalyticsId: "",
   googleTagManagerId: "",
+  metaPixelId: "",
+  metaPixelScript: "",
   googleSearchConsoleVerification: "",
   bingSiteVerification: "",
   robotsIndex: true,
@@ -270,6 +272,48 @@ export default function SeoSettingsPage() {
               className={inputClasses}
               placeholder="msvalidate.01 content"
             />
+          </div>
+        </fieldset>
+
+        <fieldset className="space-y-4 rounded-2xl border border-brand-border bg-white p-6">
+          <legend className="px-1 text-sm font-bold text-brand-dark">
+            Meta (Facebook) Pixel
+          </legend>
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-brand-dark">
+              Pixel ID
+            </label>
+            <input
+              type="text"
+              value={form.metaPixelId}
+              onChange={(e) => handleChange("metaPixelId", e.target.value)}
+              className={inputClasses}
+              placeholder="123456789012345"
+            />
+            <p className="mt-1 text-xs text-brand-gray">
+              Numeric ID from Meta Events Manager. Used to build the standard
+              PageView pixel if no custom script is pasted below.
+            </p>
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-brand-dark">
+              Pixel script (optional)
+            </label>
+            <textarea
+              value={form.metaPixelScript}
+              onChange={(e) =>
+                handleChange("metaPixelScript", e.target.value)
+              }
+              rows={8}
+              className={`${inputClasses} font-mono text-xs`}
+              placeholder="Paste the full Meta Pixel base code from Events Manager…"
+            />
+            <p className="mt-1 text-xs text-brand-gray">
+              Paste Meta&apos;s snippet as-is (including{" "}
+              <code className="text-brand-dark">&lt;script&gt;</code> tags). When
+              present, this runs site-wide on every public page. If both ID and
+              script are set, the pasted script takes priority.
+            </p>
           </div>
         </fieldset>
 
