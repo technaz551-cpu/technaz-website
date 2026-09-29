@@ -3,6 +3,7 @@ import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import StoreProvider from "@/components/providers/StoreProvider";
 import SeoScripts from "@/components/seo/SeoScripts";
+import MetaPixelHead from "@/components/seo/MetaPixelHead";
 import { getSeoSettings, buildRootMetadata } from "@/lib/getSeoSettings";
 import dbConnect from "@/lib/dbConnect";
 import NavbarContent from "@/models/NavbarContent";
@@ -45,6 +46,9 @@ export default async function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        <MetaPixelHead seo={seo} />
+      </head>
       <body
         className="min-h-full flex flex-col font-sans"
         suppressHydrationWarning

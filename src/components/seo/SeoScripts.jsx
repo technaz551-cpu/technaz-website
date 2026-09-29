@@ -1,11 +1,8 @@
 import Script from "next/script";
-import { resolveMetaPixelInjection } from "@/lib/metaPixel";
 
 export default function SeoScripts({ seo }) {
   const gaId = seo?.googleAnalyticsId?.trim();
   const gtmId = seo?.googleTagManagerId?.trim();
-  const { pixelId, inlineScript: metaPixelScript } =
-    resolveMetaPixelInjection(seo);
 
   return (
     <>
@@ -42,25 +39,6 @@ export default function SeoScripts({ seo }) {
             gtag('js', new Date());
             gtag('config', '${gaId}');
           `}</Script>
-        </>
-      ) : null}
-
-      {metaPixelScript ? (
-        <>
-          <Script id="meta-pixel" strategy="afterInteractive">
-            {metaPixelScript}
-          </Script>
-          {pixelId ? (
-            <noscript>
-              <img
-                height="1"
-                width="1"
-                style={{ display: "none" }}
-                alt=""
-                src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
-              />
-            </noscript>
-          ) : null}
         </>
       ) : null}
     </>

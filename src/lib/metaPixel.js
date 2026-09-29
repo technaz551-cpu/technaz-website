@@ -9,14 +9,15 @@ export function normalizeMetaPixelScript(raw) {
 
 /** Extract Pixel ID from numeric input or pasted fbq('init', '…') code. */
 export function extractMetaPixelId(pixelIdField, scriptField) {
-  const id = pixelIdField?.trim();
-  if (id && /^\d+$/.test(id)) return id;
+  const id = pixelIdField?.trim().replace(/\D/g, "");
+  if (id) return id;
 
   const script = normalizeMetaPixelScript(scriptField || "");
   const match = script.match(
-    /fbq\s*\(\s*['"]init['"]\s*,\s*['"](\d+)['"]/
+    /fbq\s*\(\s*['"]init['"]\s*,\s*['"]([^'"]+)['"]/
   );
-  return match?.[1] || "";
+  const extracted = match?.[1]?.replace(/\D/g, "") || "";
+  return extracted;
 }
 
 export function buildDefaultMetaPixelScript(pixelId) {
@@ -38,9 +39,15 @@ fbq('track', 'PageView');
 }
 
 export function resolveMetaPixelInjection(seo) {
+  const envPixelId =
+    process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim() ||
+    process.env.META_PIXEL_ID?.trim();
+
   const scriptField = seo?.metaPixelScript?.trim();
   const normalized = normalizeMetaPixelScript(scriptField);
-  const pixelId = extractMetaPixelId(seo?.metaPixelId, scriptField);
+  const pixelId =
+    extractMetaPixelId(seo?.metaPixelId, scriptField) ||
+    (envPixelId ? envPixelId.replace(/\D/g, "") : "");
 
   if (normalized && normalized.includes("fbq")) {
     return { pixelId, inlineScript: normalized };

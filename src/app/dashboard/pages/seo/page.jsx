@@ -310,9 +310,11 @@ export default function SeoSettingsPage() {
             />
             <p className="mt-1 text-xs text-brand-gray">
               Paste Meta&apos;s snippet as-is (including{" "}
-              <code className="text-brand-dark">&lt;script&gt;</code> tags). When
-              present, this runs site-wide on every public page. If both ID and
-              script are set, the pasted script takes priority.
+              <code className="text-brand-dark">&lt;script&gt;</code> tags). It
+              is injected in the site <strong>HTML head</strong> so Meta can
+              detect it. Save here on <strong>production</strong> admin (MongoDB
+              is per environment). Optional env fallback:{" "}
+              <code className="text-brand-dark">META_PIXEL_ID</code>.
             </p>
           </div>
         </fieldset>
