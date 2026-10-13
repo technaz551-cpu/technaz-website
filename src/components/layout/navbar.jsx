@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { buildProductDropdownFromContent } from "@/lib/productNav";
+import { DEFAULT_BRAND } from "@/lib/brandAssets";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -89,7 +90,7 @@ function ProductDropdownLink({ item, className, children, onNavigate }) {
   );
 }
 
-export default function Navbar({ content, productsContent }) {
+export default function Navbar({ content, productsContent, brand }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isProductOpen, setIsProductOpen] = useState(false);
 
@@ -109,6 +110,7 @@ export default function Navbar({ content, productsContent }) {
 
   const PRODUCT_DROPDOWN = fromProducts || legacyDropdown;
   const productViewAllHref = fromProducts?.viewAllHref || "/products";
+  const siteLogoUrl = brand?.siteLogoUrl || DEFAULT_BRAND.siteLogoUrl;
 
   return (
     <header className="relative w-full border-b border-gray-100 bg-white">
@@ -116,7 +118,7 @@ export default function Navbar({ content, productsContent }) {
         {/* Logo */}
         <Link href="/" className="flex shrink-0 items-center">
           <Image
-            src="/images/footer/technaz-large-logo.png"
+            src={siteLogoUrl}
             alt="Technaz"
             width={200}
             height={40}

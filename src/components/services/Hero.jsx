@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Hero({ content }) {
   const hero = content?.hero;
-  const title = hero?.title || "Our Services";
+  const title = hero?.title || "Our Technology Services";
   const description =
     hero?.description ||
     "From product strategy to engineering and long-term optimization, TECHNAZ provides the technology capabilities businesses need to build and scale.";

@@ -5,6 +5,7 @@ import { Loader2, ExternalLink } from "lucide-react";
 import {
   useGetSeoSettingsQuery,
   useUpdateSeoSettingsMutation,
+  useUploadFileMutation,
 } from "@/store/api/technazApi";
 import { SITE } from "@/lib/site";
 
@@ -14,6 +15,9 @@ const EMPTY = {
   keywords: [],
   siteUrl: "",
   locale: "",
+  faviconUrl: "",
+  siteLogoUrl: "",
+  siteLogoSmallUrl: "",
   ogImage: "",
   twitterCard: "summary_large_image",
   googleAnalyticsId: "",
@@ -38,6 +42,8 @@ export default function SeoSettingsPage() {
   const [message, setMessage] = useState(null);
   const { data, isLoading, isError } = useGetSeoSettingsQuery();
   const [updateSeo] = useUpdateSeoSettingsMutation();
+  const [uploadFile] = useUploadFileMutation();
+  const [uploadingField, setUploadingField] = useState(null);
 
   useEffect(() => {
     if (isError) {
@@ -58,6 +64,23 @@ export default function SeoSettingsPage() {
 
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleBrandUpload = async (field, file) => {
+    if (!file) return;
+    setUploadingField(field);
+    setMessage(null);
+    try {
+      const uploadData = await uploadFile(file).unwrap();
+      handleChange(field, uploadData.url);
+    } catch (err) {
+      setMessage({
+        type: "error",
+        text: err.data?.error || err.message || "Image upload failed.",
+      });
+    } finally {
+      setUploadingField(null);
+    }
   };
 
   const handleSave = async () => {
@@ -116,6 +139,89 @@ export default function SeoSettingsPage() {
       </div>
 
       <div className="max-w-3xl space-y-8">
+        <fieldset className="space-y-4 rounded-2xl border border-brand-border bg-white p-6">
+          <legend className="px-1 text-sm font-bold text-brand-dark">
+            Logo &amp; favicon
+          </legend>
+          <p className="text-sm text-brand-gray">
+            Used in the header, footer, browser tab, and Google search results.
+            Upload a square PNG or ICO for the favicon (at least 48×48px).
+          </p>
+          {[
+            {
+              field: "faviconUrl",
+              label: "Favicon",
+              hint: "Browser tab & Google search icon",
+            },
+            {
+              field: "siteLogoUrl",
+              label: "Header logo",
+              hint: "Main navbar & admin sidebar",
+            },
+            {
+              field: "siteLogoSmallUrl",
+              label: "Footer logo (optional)",
+              hint: "Leave empty to reuse the header logo",
+            },
+          ].map(({ field, label, hint }) => {
+            const url = form[field] || "";
+            const uploading = uploadingField === field;
+            return (
+              <div
+                key={field}
+                className="rounded-xl border border-dashed border-brand-border p-4"
+              >
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold text-brand-dark">
+                      {label}
+                    </p>
+                    <p className="text-xs text-brand-gray">{hint}</p>
+                  </div>
+                  <label className="cursor-pointer rounded-full bg-brand-green px-4 py-2 text-xs font-semibold text-white hover:bg-brand-green-dark">
+                    {uploading ? "Uploading…" : url ? "Replace" : "Upload"}
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/x-icon,image/vnd.microsoft.icon,.ico"
+                      className="hidden"
+                      disabled={uploading}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        handleBrandUpload(field, file);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                </div>
+                {url ? (
+                  <div className="flex items-center gap-4">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={url}
+                      alt=""
+                      className={
+                        field === "faviconUrl"
+                          ? "h-12 w-12 rounded border border-brand-border object-contain bg-white p-1"
+                          : "h-10 max-w-[200px] object-contain"
+                      }
+                    />
+                    <input
+                      type="url"
+                      value={url}
+                      onChange={(e) => handleChange(field, e.target.value)}
+                      className={inputClasses}
+                    />
+                  </div>
+                ) : (
+                  <p className="text-xs text-brand-gray">
+                    No image yet — uses site default until you upload.
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </fieldset>
+
         <fieldset className="space-y-4 rounded-2xl border border-brand-border bg-white p-6">
           <legend className="px-1 text-sm font-bold text-brand-dark">
             Site metadata
@@ -180,17 +286,61 @@ export default function SeoSettingsPage() {
               />
             </div>
           </div>
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-brand-dark">
-              Default Open Graph image URL
-            </label>
-            <input
-              type="url"
-              value={form.ogImage}
-              onChange={(e) => handleChange("ogImage", e.target.value)}
-              className={inputClasses}
-              placeholder="https://..."
-            />
+          <div className="rounded-xl border border-dashed border-brand-border p-4">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <p className="text-sm font-semibold text-brand-dark">
+                  Default Open Graph image
+                </p>
+                <p className="text-xs text-brand-gray">
+                  Shown when links are shared (Facebook, LinkedIn, etc.).
+                  Recommended 1200×630px.
+                </p>
+              </div>
+              <label className="cursor-pointer rounded-full bg-brand-green px-4 py-2 text-xs font-semibold text-white hover:bg-brand-green-dark">
+                {uploadingField === "ogImage"
+                  ? "Uploading…"
+                  : form.ogImage
+                    ? "Replace"
+                    : "Upload"}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  className="hidden"
+                  disabled={uploadingField === "ogImage"}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    handleBrandUpload("ogImage", file);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+            </div>
+            {form.ogImage ? (
+              <div className="space-y-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={form.ogImage}
+                  alt=""
+                  className="max-h-40 w-full max-w-md rounded-lg border border-brand-border object-cover"
+                />
+                <input
+                  type="url"
+                  value={form.ogImage}
+                  onChange={(e) => handleChange("ogImage", e.target.value)}
+                  className={inputClasses}
+                  placeholder="https://..."
+                />
+              </div>
+            ) : (
+              <input
+                type="url"
+                value={form.ogImage}
+                onChange={(e) => handleChange("ogImage", e.target.value)}
+                className={inputClasses}
+                placeholder="https://... or use Upload"
+              />
+            )}
           </div>
           <div>
             <label className="mb-2 block text-sm font-semibold text-brand-dark">
@@ -225,7 +375,10 @@ export default function SeoSettingsPage() {
               placeholder="G-XXXXXXXXXX"
             />
             <p className="mt-1 text-xs text-brand-gray">
-              Loaded site-wide via gtag.js (skipped if GTM ID is set).
+              Injected in the page &lt;head&gt; via gtag.js. If GTM is set,
+              GA loads through GTM instead (do not duplicate). You can also set{" "}
+              <code className="text-brand-dark">GOOGLE_ANALYTICS_ID</code> in
+              hosting env vars.
             </p>
           </div>
           <div>
@@ -241,6 +394,10 @@ export default function SeoSettingsPage() {
               className={inputClasses}
               placeholder="GTM-XXXXXXX"
             />
+            <p className="mt-1 text-xs text-brand-gray">
+              Or set <code className="text-brand-dark">GOOGLE_TAG_MANAGER_ID</code>{" "}
+              in hosting env vars.
+            </p>
           </div>
           <div>
             <label className="mb-2 block text-sm font-semibold text-brand-dark">
@@ -256,8 +413,19 @@ export default function SeoSettingsPage() {
                 )
               }
               className={inputClasses}
-              placeholder="verification code (content value only)"
+              placeholder="verification code or full meta tag"
             />
+            <p className="mt-1 text-xs text-brand-gray">
+              Renders{" "}
+              <code className="text-brand-dark">
+                google-site-verification
+              </code>{" "}
+              in HTML. Or set{" "}
+              <code className="text-brand-dark">
+                GOOGLE_SEARCH_CONSOLE_VERIFICATION
+              </code>{" "}
+              in env.
+            </p>
           </div>
           <div>
             <label className="mb-2 block text-sm font-semibold text-brand-dark">

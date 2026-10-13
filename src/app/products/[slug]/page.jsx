@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 import dbConnect from "@/lib/dbConnect";
 import ProductsContent from "@/models/ProductsContent";
-import { SITE } from "@/lib/site";
 import { stripHtml } from "@/lib/stripHtml";
+import { getSeoSettings } from "@/lib/getSeoSettings";
+import { buildPageMetadata } from "@/lib/pageMetadata";
 import ProductDetailHero from "@/components/products/ProductDetailHero";
 import ProductHighlights from "@/components/products/ProductHighlights";
 import MoreProducts from "@/components/products/MoreProducts";
@@ -26,17 +27,18 @@ export async function generateMetadata({ params }) {
     return { title: "Product not found" };
   }
 
+  const seo = await getSeoSettings();
   const plain =
     product.excerpt ||
     stripHtml(product.description).slice(0, 160);
+  const title = product.metaTitle?.trim() || `${product.title} | TECHNAZ`;
 
-  return {
-    title: product.title,
-    description: plain,
-    alternates: {
-      canonical: `${SITE.url}/products/${slug}`,
-    },
-  };
+  return buildPageMetadata(seo, {
+    title,
+    description: product.metaDescription?.trim() || plain,
+    pathname: `/products/${slug}`,
+    ogImage: product.image?.url || product.logo?.url || seo?.ogImage,
+  });
 }
 
 export default async function ProductDetailPage({ params }) {

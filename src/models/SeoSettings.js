@@ -11,6 +11,9 @@ const SeoSettingsSchema = new mongoose.Schema(
     },
     siteUrl: { type: String, default: SITE.url },
     locale: { type: String, default: SITE.locale },
+    faviconUrl: { type: String, default: "" },
+    siteLogoUrl: { type: String, default: "" },
+    siteLogoSmallUrl: { type: String, default: "" },
     ogImage: { type: String, default: "" },
     twitterCard: {
       type: String,

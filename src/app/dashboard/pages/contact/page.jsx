@@ -117,7 +117,7 @@ export default function EditContactPage() {
           <span className="text-brand-green">Contact</span> page &amp; info
         </h1>
         <p className="mt-3 text-sm text-brand-gray">
-          Manage emails, office locations (Australia, Pakistan, and more),
+          Manage emails, office locations, social links, and footer tagline,
           opening hours, social links, and footer contact details.{" "}
           <Link
             href="/dashboard/pages/contact/queries"

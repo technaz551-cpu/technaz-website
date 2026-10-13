@@ -4,6 +4,32 @@ import Image from "next/image";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import dbConnect from "@/lib/dbConnect";
 import ServicesContent from "@/models/ServicesContent";
+import { getSeoSettings } from "@/lib/getSeoSettings";
+import { buildPageMetadata } from "@/lib/pageMetadata";
+
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  await dbConnect();
+  const content = await ServicesContent.findOne({}).lean();
+  const service = content?.features?.find((f) => f.slug === slug);
+  const seo = await getSeoSettings();
+
+  if (!service) {
+    return { title: { absolute: "Service not found | TECHNAZ" } };
+  }
+
+  const title = `${service.title} | TECHNAZ`;
+  const description =
+    service.description?.slice(0, 160) ||
+    `Learn about ${service.title} from TECHNAZ.`;
+
+  return buildPageMetadata(seo, {
+    title,
+    description,
+    pathname: `/services/${slug}`,
+    ogImage: service.image?.url || seo?.ogImage,
+  });
+}
 
 export default async function ServiceDetailPage({ params }) {
   const { slug } = await params;

@@ -1,22 +1,16 @@
 import ContactForm from "@/components/contact/ContactForm";
 import ContactMapSection from "@/components/contact/ContactMapSection";
 import { getContactContent } from "@/lib/getContactContent";
-import { SITE } from "@/lib/site";
+import { getSeoSettings } from "@/lib/getSeoSettings";
+import {
+  buildPageMetadata,
+  STATIC_PAGE_SEO,
+} from "@/lib/pageMetadata";
 
-export const metadata = {
-  title: "Contact Us",
-  description:
-    "Get in touch with Technaz for managed IT, cloud solutions, custom software and technology support across Australia.",
-  alternates: {
-    canonical: `${SITE.url}/contact`,
-  },
-  openGraph: {
-    title: `Contact Us | ${SITE.name}`,
-    description:
-      "Speak with Technaz about managed IT, cloud migration, cyber security and custom software for your business.",
-    url: `${SITE.url}/contact`,
-  },
-};
+export async function generateMetadata() {
+  const seo = await getSeoSettings();
+  return buildPageMetadata(seo, STATIC_PAGE_SEO.contact);
+}
 
 export default async function ContactPage() {
   const contactContent = await getContactContent();

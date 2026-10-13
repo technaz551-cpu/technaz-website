@@ -1,8 +1,8 @@
 export const SITE = {
-  name: "Technaz",
-  title: "Technaz | Managed IT & Custom Software",
+  name: "TECHNAZ",
+  title: "Technology & Software Development Company | TECHNAZ",
   description:
-    "Technaz gives growing Australian businesses dependable technology support — managed IT, cloud, cyber security and custom software from one team.",
+    "TECHNAZ provides software development and technology solutions, including custom software, web and mobile development, UI/UX, AI automation and DevOps.",
   url: "https://technaz.com.au",
   locale: "en_AU",
   keywords: [

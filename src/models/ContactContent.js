@@ -37,16 +37,6 @@ const DEFAULT_OFFICES = [
     openingHours: "Mon – Fri, 8:00am – 6:00pm AEST",
     isPrimaryMap: true,
   },
-  {
-    name: "Pakistan",
-    country: "Pakistan",
-    address: "Add your Pakistan office address",
-    phone: "",
-    email: "hello@technaz.com.au",
-    mapEmbedUrl: "",
-    openingHours: "Mon – Fri, 9:00am – 6:00pm PKT",
-    isPrimaryMap: false,
-  },
 ];
 
 const ContactContentSchema = new mongoose.Schema(
@@ -92,7 +82,7 @@ const ContactContentSchema = new mongoose.Schema(
     footerBlurb: {
       type: String,
       default:
-        "Australia's trusted technology partner — we build, support and scale IT for growing businesses.",
+        "Software Development & Technology Solutions for Modern Businesses",
     },
   },
   { timestamps: true }

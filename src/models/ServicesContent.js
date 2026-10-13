@@ -5,7 +5,7 @@ const ServicesContentSchema = new mongoose.Schema(
     hero: {
       title: {
         type: String,
-        default: "Our Services",
+        default: "Our Technology Services",
       },
       description: {
         type: String,

@@ -2,6 +2,8 @@ import { cookies } from "next/headers";
 import Image from "next/image";
 import { verifyAuthToken, AUTH_COOKIE_NAME } from "@/lib/auth";
 import LogoutButton from "@/components/dashboard/LogoutButton";
+import { getSeoSettings } from "@/lib/getSeoSettings";
+import { resolveBrand } from "@/lib/brandAssets";
 
 export const metadata = {
   title: "Dashboard",
@@ -11,13 +13,14 @@ export default async function DashboardPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
   const admin = await verifyAuthToken(token);
+  const brand = resolveBrand(await getSeoSettings());
 
   return (
     <main className="min-h-screen bg-brand-green-light">
       <header className="border-b border-brand-border bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
           <Image
-            src="/images/footer/technaz-large-logo.png"
+            src={brand.siteLogoUrl}
             alt="Technaz"
             width={130}
             height={36}

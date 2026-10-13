@@ -2,9 +2,11 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import StoreProvider from "@/components/providers/StoreProvider";
-import SeoScripts from "@/components/seo/SeoScripts";
 import MetaPixelHead from "@/components/seo/MetaPixelHead";
+import GoogleTrackingHead from "@/components/seo/GoogleTrackingHead";
+import GoogleTrackingBody from "@/components/seo/GoogleTrackingBody";
 import { getSeoSettings, buildRootMetadata } from "@/lib/getSeoSettings";
+import { resolveBrand } from "@/lib/brandAssets";
 import dbConnect from "@/lib/dbConnect";
 import NavbarContent from "@/models/NavbarContent";
 import ProductsContent from "@/models/ProductsContent";
@@ -44,6 +46,7 @@ export default async function RootLayout({ children }) {
   }
   const navbarContent = JSON.parse(JSON.stringify(navbarDoc));
   const productsContent = JSON.parse(JSON.stringify(productsDoc));
+  const brand = resolveBrand(seo);
 
   return (
     <html
@@ -53,16 +56,21 @@ export default async function RootLayout({ children }) {
     >
       <head>
         <MetaPixelHead seo={seo} />
+        <GoogleTrackingHead seo={seo} />
       </head>
       <body
         className="min-h-full flex flex-col font-sans"
         suppressHydrationWarning
       >
-        <SeoScripts seo={seo} />
+        <GoogleTrackingBody seo={seo} />
         <StoreProvider>
-          <Navbar content={navbarContent} productsContent={productsContent} />
+          <Navbar
+            content={navbarContent}
+            productsContent={productsContent}
+            brand={brand}
+          />
           {children}
-          <Footer contactContent={contactContent} />
+          <Footer contactContent={contactContent} brand={brand} />
         </StoreProvider>
       </body>
     </html>

@@ -2,6 +2,9 @@ import dbConnect from "@/lib/dbConnect";
 import SeoSettings from "@/models/SeoSettings";
 import { SITE } from "@/lib/site";
 import { cmsDynamic } from "@/lib/cmsDynamic";
+import { resolveBrand, absoluteAssetUrl } from "@/lib/brandAssets";
+import { ORGANIZATION_SAME_AS, canonicalUrl } from "@/lib/pageMetadata";
+import { withResolvedTracking } from "@/lib/trackingSettings";
 
 export async function getSeoSettings() {
   cmsDynamic();
@@ -10,7 +13,7 @@ export async function getSeoSettings() {
   if (!doc) {
     doc = (await SeoSettings.create({})).toObject();
   }
-  return JSON.parse(JSON.stringify(doc));
+  return withResolvedTracking(JSON.parse(JSON.stringify(doc)));
 }
 
 export function buildRootMetadata(seo) {
@@ -20,9 +23,7 @@ export function buildRootMetadata(seo) {
   const keywords = seo?.keywords?.length ? seo.keywords : SITE.keywords;
 
   const verification = {};
-  if (seo?.googleSearchConsoleVerification) {
-    verification.google = seo.googleSearchConsoleVerification;
-  }
+  // GSC meta is emitted in GoogleTrackingHead (raw HTML for validators).
   if (seo?.bingSiteVerification) {
     verification.other = {
       "msvalidate.01": seo.bingSiteVerification,
@@ -33,7 +34,7 @@ export function buildRootMetadata(seo) {
     metadataBase: new URL(baseUrl),
     title: {
       default: title,
-      template: `%s | ${SITE.name}`,
+      template: "%s",
     },
     description,
     keywords,
@@ -59,7 +60,7 @@ export function buildRootMetadata(seo) {
       ...(seo?.ogImage ? { images: [seo.ogImage] } : {}),
     },
     alternates: {
-      canonical: baseUrl,
+      canonical: canonicalUrl(seo, "/"),
     },
   };
 
@@ -67,5 +68,34 @@ export function buildRootMetadata(seo) {
     metadata.verification = verification;
   }
 
+  const brand = resolveBrand(seo);
+  const favicon =
+    absoluteAssetUrl(brand.faviconUrl, baseUrl) ||
+    absoluteAssetUrl("/favicon.ico", baseUrl);
+  const appleIcon =
+    absoluteAssetUrl(brand.faviconUrl, baseUrl) ||
+    absoluteAssetUrl(brand.siteLogoSmallUrl, baseUrl);
+
+  metadata.icons = {
+    icon: [{ url: favicon, sizes: "any" }],
+    shortcut: favicon,
+    apple: appleIcon,
+  };
+
   return metadata;
+}
+
+export function buildOrganizationJsonLd(seo) {
+  const baseUrl = (seo?.siteUrl || SITE.url).replace(/\/?$/, "/");
+  const brand = resolveBrand(seo);
+  const logo = absoluteAssetUrl(brand.siteLogoUrl, baseUrl);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "TECHNAZ",
+    url: baseUrl,
+    ...(logo ? { logo } : {}),
+    sameAs: ORGANIZATION_SAME_AS,
+  };
 }

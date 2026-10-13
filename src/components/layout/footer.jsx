@@ -3,6 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { DEFAULT_BRAND } from "@/lib/brandAssets";
+import {
+  FOOTER_SERVICES,
+  footerServiceHref,
+} from "@/lib/footerServices";
+import { FOOTER_TAGLINE_DEFAULT } from "@/lib/pageMetadata";
 
 const QUICK_LINKS = [
   { label: "Home", href: "/" },
@@ -11,15 +17,6 @@ const QUICK_LINKS = [
   { label: "Products", href: "/products" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
-];
-
-const SERVICES = [
-  "Managed IT",
-  "Cloud Solutions",
-  "Cyber Security",
-  "Custom Software",
-  "Web Development",
-  "DevOps & Support",
 ];
 
 const DEFAULT_SOCIAL = [
@@ -40,7 +37,7 @@ const DEFAULT_SOCIAL = [
   },
 ];
 
-export default function Footer({ contactContent }) {
+export default function Footer({ contactContent, brand }) {
   const pathname = usePathname();
 
   if (pathname === "/login" || pathname.startsWith("/dashboard")) {
@@ -56,8 +53,9 @@ export default function Footer({ contactContent }) {
     ? contactContent.socialLinks
     : DEFAULT_SOCIAL;
   const footerBlurb =
-    contactContent?.footerBlurb ||
-    "Australia's trusted technology partner — we build, support and scale IT for growing businesses.";
+    contactContent?.footerBlurb || FOOTER_TAGLINE_DEFAULT;
+  const siteLogoSmallUrl =
+    brand?.siteLogoSmallUrl || DEFAULT_BRAND.siteLogoSmallUrl;
 
   return (
     <footer className="w-full bg-[#303747] text-white">
@@ -66,7 +64,7 @@ export default function Footer({ contactContent }) {
           <div className="lg:col-span-1">
             <Link href="/">
               <Image
-                src="/images/footer/technaz-small-logo.png"
+                src={siteLogoSmallUrl}
                 alt="Technaz"
                 width={165}
                 height={30}
@@ -101,13 +99,13 @@ export default function Footer({ contactContent }) {
               Our Services
             </h3>
             <ul className="mt-4 space-y-2.5">
-              {SERVICES.map((service) => (
-                <li key={service}>
+              {FOOTER_SERVICES.map((service) => (
+                <li key={service.label}>
                   <Link
-                    href="/#services"
+                    href={footerServiceHref(service.slug)}
                     className="text-sm text-white/75 transition-colors hover:text-brand-green"
                   >
-                    {service}
+                    {service.label}
                   </Link>
                 </li>
               ))}

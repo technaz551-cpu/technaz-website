@@ -126,34 +126,34 @@ const AboutContentSchema = new mongoose.Schema(
           ],
           default: [
             {
-              question: "How quickly do you respond to IT support issues?",
+              question: "What does TECHNAZ do?",
               answer:
-                "For managed IT clients, critical incidents are acknowledged within 30 minutes and urgent issues are prioritised immediately. Standard requests are handled within agreed SLA timeframes, with clear updates so you always know the status of your ticket.",
+                "TECHNAZ delivers software development and technology services — including custom software, web and mobile apps, product development, UI/UX design, AI automation, and Cloud & DevOps — for businesses that need reliable digital solutions.",
             },
             {
-              question: "What services does Technaz provide?",
+              question: "What services does TECHNAZ provide?",
               answer:
-                "Technaz offers managed IT, cloud solutions (Azure, AWS and Microsoft 365), cyber security, custom software development, web development, SaaS builds, DevOps and ongoing support — all from one Australian technology team.",
+                "Our core capabilities include custom software development, web development, mobile apps, UI/UX design, AI & automation, product development, dedicated development teams, and Cloud & DevOps with CI/CD practices.",
             },
             {
               question: "Do you work with businesses across Australia?",
               answer:
-                "Yes. We support growing businesses across Australia with remote and on-site services. Whether you need cloud migration, a custom web app or day-to-day IT support, our team delivers with clear communication and no jargon.",
+                "Yes. We partner with Australian businesses remotely and on-site when needed, with clear communication, practical timelines, and documentation your team can rely on.",
             },
             {
-              question: "Can you help migrate our business to the cloud?",
+              question: "How do new projects typically start?",
               answer:
-                "Absolutely. We plan and execute cloud migrations to Azure, AWS and Microsoft 365 — including email, file storage, backups and security. We minimise downtime and train your team so the transition is smooth.",
+                "We begin with discovery to understand goals, users, and constraints. You receive a scoped plan with milestones before design and development — so expectations stay aligned from day one.",
             },
             {
-              question: "Do you build custom software or only provide managed IT?",
+              question: "Do you offer support after launch?",
               answer:
-                "Both. We design and build tailored software, web applications and integrations, and we also provide proactive managed IT and support. Many clients use Technaz as their single partner for building and running their technology.",
+                "Yes. We provide maintenance, improvements, and DevOps support so your product stays secure, performant, and ready to evolve as your business grows.",
             },
             {
-              question: "What does onboarding with Technaz look like?",
+              question: "Can you help us go from idea to MVP?",
               answer:
-                "We start with a discovery session to understand your goals, systems and pain points. From there we provide a clear roadmap, scope and timeline — then move into design, build or support depending on what your business needs.",
+                "Absolutely. We help teams validate ideas, shape UI/UX, build an MVP, test with real users, and iterate — using a practical process designed to reduce risk and speed up learning.",
             },
           ],
         },

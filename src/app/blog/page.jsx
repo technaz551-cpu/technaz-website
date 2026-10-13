@@ -2,18 +2,14 @@ import dbConnect from "@/lib/dbConnect";
 import BlogPost from "@/models/BlogPost";
 import BlogCard from "@/components/blog/BlogCard";
 import { getSeoSettings } from "@/lib/getSeoSettings";
-import { SITE } from "@/lib/site";
+import {
+  buildPageMetadata,
+  STATIC_PAGE_SEO,
+} from "@/lib/pageMetadata";
 
 export async function generateMetadata() {
   const seo = await getSeoSettings();
-  const base = seo.siteUrl || SITE.url;
-
-  return {
-    title: "Blog",
-    description:
-      "Insights on managed IT, software development, cloud, and digital products from the Technaz team.",
-    alternates: { canonical: `${base}/blog` },
-  };
+  return buildPageMetadata(seo, STATIC_PAGE_SEO.blog);
 }
 
 export default async function BlogPage() {

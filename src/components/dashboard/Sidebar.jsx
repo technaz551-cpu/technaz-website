@@ -12,6 +12,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import LogoutButton from "@/components/dashboard/LogoutButton";
+import { DEFAULT_BRAND } from "@/lib/brandAssets";
 
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -76,7 +77,8 @@ const NAV_ITEMS = [
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ brand }) {
+  const siteLogoUrl = brand?.siteLogoUrl || DEFAULT_BRAND.siteLogoUrl;
   const pathname = usePathname();
   const [openGroup, setOpenGroup] = useState(null);
 
@@ -91,7 +93,7 @@ export default function Sidebar() {
     <aside className="flex h-full w-64 flex-shrink-0 flex-col overflow-hidden border-r border-gray-100 bg-white">
       <div className="flex h-20 items-center border-b border-gray-100 px-6">
         <Image
-          src="/images/footer/technaz-large-logo.png"
+          src={siteLogoUrl}
           alt="Technaz"
           width={200}
           height={40}

@@ -2,16 +2,16 @@ import dbConnect from "@/lib/dbConnect";
 import ProductsContent from "@/models/ProductsContent";
 import ProductsHero from "@/components/products/Hero";
 import ProductGrid from "@/components/products/ProductGrid";
-import { SITE } from "@/lib/site";
+import { getSeoSettings } from "@/lib/getSeoSettings";
+import {
+  buildPageMetadata,
+  STATIC_PAGE_SEO,
+} from "@/lib/pageMetadata";
 
-export const metadata = {
-  title: "Products",
-  description:
-    "Explore software platforms and digital products built by Technaz for rideshare clubs and growing businesses.",
-  alternates: {
-    canonical: `${SITE.url}/products`,
-  },
-};
+export async function generateMetadata() {
+  const seo = await getSeoSettings();
+  return buildPageMetadata(seo, STATIC_PAGE_SEO.products);
+}
 
 export default async function ProductsPage() {
   await dbConnect();
