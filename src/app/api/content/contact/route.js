@@ -46,13 +46,18 @@ export async function PUT(request) {
       for (const key of Object.keys(body)) {
         if (Array.isArray(body[key])) {
           content[key] = body[key];
-        } else {
+        } else if (
+          body[key] !== null &&
+          typeof body[key] === "object"
+        ) {
           content[key] = {
             ...(content[key]?.toObject
               ? content[key].toObject()
-              : content[key]),
+              : content[key] || {}),
             ...body[key],
           };
+        } else {
+          content[key] = body[key];
         }
       }
       await content.save();
